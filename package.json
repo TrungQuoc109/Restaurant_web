@@ -1,0 +1,20 @@
+{
+    "name": "restaurant_proj",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "https://github.com/TrungQuoc109/Restaurant_web.git",
+    "author": "",
+    "license": "",
+    "packageManager": "yarn@4.0.1",
+    "workspaces": [
+        "./packages/*"
+    ],
+    "scripts": {
+        "all": "concurrently --kill-others-on-fail \"yarn dev:server\" \"yarn dev:web\"",
+        "dev:web": "yarn workspace client dev",
+        "dev:server": "yarn workspace server dev"
+    },
+    "dependencies": {
+        "concurrently": "^8.2.0"
+    }
+}
