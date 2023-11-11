@@ -15,6 +15,7 @@
         "dev:server": "yarn workspace server dev"
     },
     "dependencies": {
-        "concurrently": "^8.2.0"
+        "concurrently": "^8.2.0",
+        "mongoose": "^8.0.0"
     }
 }
