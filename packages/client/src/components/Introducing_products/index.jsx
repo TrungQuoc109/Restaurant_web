@@ -93,6 +93,17 @@ function ProductGrid() {
           </Button>
         </Grid>
       </Grid>
+      <Grid item xs={12} sx={{ paddingTop: "1rem", textAlign: "center" }}>
+        <iframe
+          src="https://www.google.com/maps/d/embed?mid=1dn7AFqMjcRrIh5nXoiTzm-XOazaurWrX&ehbc=2E312F"
+          width="1090"
+          height="450"
+          style={{ border: 0, m: "1" }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </Grid>
     </Container>
   );
 }
