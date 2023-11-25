@@ -1,22 +1,27 @@
-import {MongoClient} from 'mongodb';
+import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
 dotenv.config();
+const db = process.env.DATABASE ?? "";
+const host = process.env.HOST ?? "localhost";
+const username = process.env.USERNAME_DB ?? "root";
+const password = process.env.PASSWORD_DB ?? "";
 
-const URI = process.env.URI || "mongodb://localhost:27017/";
-async function dbConnect() {
-    const client = new MongoClient(URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+const sequelize = new Sequelize({
+    dialect: "mysql",
+    host: host,
+    username: username,
+    password: password,
+    database: db,
+});
+
+// Kiểm tra kết nối
+sequelize
+    .authenticate()
+    .then(() => {
+        console.log("Kết nối thành công.");
+    })
+    .catch((err) => {
+        console.error("Không thể kết nối:", err);
     });
-  
-    try {
-      const conn = await client.connect();
-      console.log("Connected correctly to server");
-      return conn;
-    } catch (err) {
-      console.log(err.stack);
-    }
-  }
-  const conn = await dbConnect();
-  const database = conn.db("restaurant");
-  export { dbConnect, database };
+
+export { sequelize };

@@ -1,9 +1,14 @@
-import { database } from "../database/index.js";
-
+import Item from "../model/item.model.js";
 export const route = (app) => {
     app.get("/", async (req, res) => {
-        const account = database.collection("account");
-        const listAccounts = await account.find().toArray();
-        return res.send(listAccounts);
+        try {
+            const items = await Item.findByPk(4);
+            // items.forEach((item) => {
+            //     console.log("Item:", item.toJSON());
+            // });
+            res.json(items);
+        } catch (error) {
+            console.error("Error fetching items:", error.message);
+        }
     });
 };
