@@ -1,17 +1,16 @@
 import "./App.css";
-import ResponsiveAppBar from "./components/Nav-bar";
-import AutoScrollingBanner from "./components/banners";
-import ProductGrid from "./components/Introducing_products";
-import Footer from "./components/footer";
+import Homepage from "./components/page/homepage";
+import Datbanpage from "./components/page/datbanPage";
+import { Route, Routes } from "react-router-dom";
+import Menupage from "./components/page/menuPage";
 
 function App() {
   return (
-    <>
-      <ResponsiveAppBar />
-      <AutoScrollingBanner />
-      <ProductGrid />
-      <Footer />
-    </>
+    <Routes>
+      <Route path="/" element={<Homepage />} />
+      <Route path="/datbanPage" element={<Datbanpage />} />
+      <Route path="/menuPage" element={<Menupage />} />
+    </Routes>
   );
 }
 

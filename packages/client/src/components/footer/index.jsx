@@ -18,7 +18,7 @@ function Footer() {
       <Container>
         <Grid container>
           <Grid item md={8}>
-            <Typography variant="body6" color="text.secondary">
+            <Typography variant="body1" color="text.secondary">
               <img src="/public/image/logo.webp" style={{ height: "5rem" }} />
               <br />
               CÔNG TY TNHH ĐẦU TƯ THƯƠNG MẠI PHƯƠNG VY <br />
@@ -33,13 +33,14 @@ function Footer() {
             </Typography>
           </Grid>
           <Grid item md={4}>
-            <Typography variant="body6" sx={{ color: "#a80e0e" }}>
+            <Typography variant="body1" sx={{ color: "#a80e0e" }}>
               Nhà hàng Phương Nam, món ngon miền Nam
             </Typography>
           </Grid>
           <Grid item>
             <Typography variant="body2" color="text.secondary">
-              <strong>Contact Us</strong>
+              <strong>CONTACT US</strong>
+
               <br />
               <IconButton>
                 <AiFillFacebook style={{ fontSize: "2rem" }} />
@@ -50,14 +51,14 @@ function Footer() {
             </Typography>
           </Grid>
         </Grid>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ textAlign: "center" }}
-        >
-          © {new Date().getFullYear()} Your Website Name
-        </Typography>
       </Container>
+      <Typography
+        variant="body1"
+        color="text.secondary"
+        sx={{ textAlign: "center" }}
+      >
+        © {new Date().getFullYear()} Your Website Name
+      </Typography>
     </Box>
   );
 }

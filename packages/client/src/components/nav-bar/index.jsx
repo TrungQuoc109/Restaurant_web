@@ -13,16 +13,11 @@ import MenuItem from "@mui/material/MenuItem";
 import InputBase from "@mui/material/InputBase";
 import { BiSearch } from "react-icons/bi";
 import { Grid } from "@mui/material";
+import { Link } from "react-router-dom";
+import { MdOutlineShoppingCart } from "react-icons/md";
 
-const pages = [
-  "MENU",
-  "THÔNG TIN NHÀ HÀNG",
-  "KHUYẾN MÃI",
-  "ĐẶT BÀN",
-  "ĐẶT MÓN",
-  "TƯ VẤN",
-];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const pages = ["MENU", "THÔNG TIN NHÀ HÀNG", "KHUYẾN MÃI", "ĐẶT BÀN", "TƯ VẤN"];
+const settings = ["Đăng nhập", "Đăng ký"];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -45,13 +40,23 @@ function ResponsiveAppBar() {
       <Container maxWidth="0">
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, m: "0.5rem" }}>
-            <img src="/public/image/logo.webp" style={{ height: "5rem" }} />
+            <IconButton component={Link} to="/">
+              <img src="/public/image/logo.webp" style={{ height: "5rem" }} />
+            </IconButton>
           </Box>
 
-          <Box sx={{ flexGrow: 0, display: { xs: "none", md: "flex" } }}>
+          <Box sx={{ flexGrow: 0.5, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
                 key={page}
+                component={Link}
+                to={
+                  page === "MENU"
+                    ? "/menuPage"
+                    : page === "ĐẶT BÀN"
+                    ? "/datbanPage"
+                    : `/${page.toLowerCase().replace(" ", "-")}`
+                }
                 onClick={handleCloseNavMenu}
                 sx={{ m: 2, color: "white", display: "block" }}
               >
@@ -59,8 +64,10 @@ function ResponsiveAppBar() {
               </Button>
             ))}
           </Box>
-          <Box sx={{ mr: "20rem", ml: "2rem" }}>
+          <Box sx={{ flexGrow: 0.6, mr: "15rem", ml: "2rem" }}>
             <Grid
+              container
+              alignItems="center"
               sx={{
                 border: "1px solid #ccc",
                 borderRadius: "9rem",
@@ -69,22 +76,38 @@ function ResponsiveAppBar() {
               }}
             >
               <InputBase
-                sx={{
-                  ml: 1,
-                  flex: 1,
-                }}
+                sx={{ flex: 1 }}
                 placeholder="Tìm kiếm..."
                 inputProps={{ "aria-label": "Tìm kiếm..." }}
               />
-              <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-                <BiSearch />
-              </IconButton>
+              <Grid item>
+                <IconButton type="button" aria-label="search">
+                  <BiSearch />
+                </IconButton>
+              </Grid>
             </Grid>
           </Box>
 
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ position: "relative" }}>
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              <IconButton
+                sx={{
+                  backgroundColor: "#bdbdbd",
+                  borderRadius: "50%",
+                  padding: "1rem",
+                  mr: 1,
+                }}
+              >
+                <MdOutlineShoppingCart />
+              </IconButton>
+              <IconButton
+                onClick={handleOpenUserMenu}
+                sx={{
+                  backgroundColor: "#bdbdbd",
+                  borderRadius: "50%",
+                  padding: "0.5rem",
+                }}
+              >
                 <Avatar alt="Remy Sharp" />
               </IconButton>
             </Tooltip>
