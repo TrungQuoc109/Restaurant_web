@@ -1,6 +1,6 @@
 import { Sequelize, DataTypes } from "sequelize";
 import { sequelize } from "../database/index.js";
-import { TakeOutOrder, Order, Reservation, Item } from "./index.model.js";
+import { TakeOutOrder, Reservation } from "./index.model.js";
 
 const OrderDetail = sequelize.define(
     "OrderDetail",
@@ -41,18 +41,15 @@ const OrderDetail = sequelize.define(
         timestamps: false,
     }
 );
-OrderDetail.hasOne(Order, {
+OrderDetail.belongsTo(TakeOutOrder, {
     foreignKey: "order_id",
-    constraints: false,
-    scope: { order_id_type: "order" },
-});
-OrderDetail.hasOne(TakeOutOrder, {
-    foreignKey: "order_id",
+    targetKey: "id",
     constraints: false,
     scope: { order_id_type: "takeoutOrder" },
 });
-OrderDetail.hasOne(Reservation, {
+OrderDetail.belongsTo(Reservation, {
     foreignKey: "order_id",
+    targetKey: "id",
     constraints: false,
     scope: { order_id_type: "reservation" },
 });

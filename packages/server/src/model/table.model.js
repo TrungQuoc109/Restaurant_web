@@ -2,7 +2,7 @@ import { Sequelize, DataTypes } from "sequelize";
 import { sequelize } from "../database/index.js";
 
 const Table = sequelize.define(
-    "Table",
+    "RestaurantTable",
     {
         id: {
             type: DataTypes.INTEGER,
@@ -14,13 +14,13 @@ const Table = sequelize.define(
             allowNullValues: false,
         },
         status: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNullValues: false,
         },
     },
     {
         modelName: "Table",
-        tableName: "Table",
+        tableName: "RestaurantTable",
         timestamps: false,
     }
 );

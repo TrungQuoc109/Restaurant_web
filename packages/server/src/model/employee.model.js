@@ -9,11 +9,6 @@ const Employee = sequelize.define(
             autoIncrement: true,
             primaryKey: true,
         },
-
-        name: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
         account_ID: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -22,6 +17,11 @@ const Employee = sequelize.define(
                 key: "id",
             },
         },
+        name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+
         phone: {
             type: DataTypes.STRING,
             allowNull: false,

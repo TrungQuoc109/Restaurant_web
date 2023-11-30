@@ -9,13 +9,21 @@ const Feedback = sequelize.define(
             autoIncrement: true,
             primaryKey: true,
         },
+        customer_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: "Cunstomer",
+                key: "id",
+            },
+        },
         content: {
             type: DataTypes.TEXT,
             allowNull: false,
         },
         date: {
             type: DataTypes.DATE,
-            allowNull: false,
+            defaultValue: sequelize.NOW,
         },
     },
     {

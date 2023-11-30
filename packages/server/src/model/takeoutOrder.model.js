@@ -9,7 +9,7 @@ const TakeOutOrder = sequelize.define(
             autoIncrement: true,
             primaryKey: true,
         },
-        customer_id: {
+        customer_ID: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
@@ -23,13 +23,13 @@ const TakeOutOrder = sequelize.define(
         },
         order_date: {
             type: DataTypes.DATE,
-            allowNull: false,
+            defaultValue: sequelize.NOW,
         },
         note: {
             type: DataTypes.TEXT,
         },
         status: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false,
         },
     },

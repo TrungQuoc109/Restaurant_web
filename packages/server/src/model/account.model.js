@@ -17,6 +17,10 @@ const Account = sequelize.define(
             type: DataTypes.STRING,
             allowNull: false,
         },
+        role: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
     },
     {
         modelName: "Account",

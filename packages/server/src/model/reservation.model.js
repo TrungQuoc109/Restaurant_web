@@ -9,7 +9,7 @@ const Reservation = sequelize.define(
             autoIncrement: true,
             primaryKey: true,
         },
-        customer_id: {
+        customer_ID: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
@@ -17,7 +17,7 @@ const Reservation = sequelize.define(
                 key: "id",
             },
         },
-        table_id: {
+        table_ID: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
@@ -27,7 +27,7 @@ const Reservation = sequelize.define(
         },
         order_date: {
             type: DataTypes.DATE,
-            allowNull: false,
+            defaultValue: sequelize.NOW,
         },
         appointment_date: {
             type: DataTypes.DATE,
@@ -37,7 +37,7 @@ const Reservation = sequelize.define(
             type: DataTypes.TEXT,
         },
         status: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false,
         },
     },

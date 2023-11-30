@@ -1,6 +1,6 @@
 import { Sequelize, DataTypes } from "sequelize";
 import { sequelize } from "../database/index.js";
-const ItemImages = sequelize(
+const ItemImages = sequelize.define(
     "ItemImages",
     {
         id: {
