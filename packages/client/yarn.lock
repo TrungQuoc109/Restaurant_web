@@ -1252,6 +1252,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"client@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "client@workspace:."
+  dependencies:
+    "@emotion/react": "npm:^11.11.1"
+    "@emotion/styled": "npm:^11.11.0"
+    "@mui/material": "npm:^5.14.15"
+    "@mui/styled-engine-sc": "npm:^6.0.0-alpha.3"
+    "@types/react": "npm:^18.2.15"
+    "@types/react-dom": "npm:^18.2.7"
+    "@vitejs/plugin-react-swc": "npm:^3.3.2"
+    eslint: "npm:^8.45.0"
+    eslint-plugin-react: "npm:^7.32.2"
+    eslint-plugin-react-hooks: "npm:^4.6.0"
+    eslint-plugin-react-refresh: "npm:^0.4.3"
+    react: "npm:^18.2.0"
+    react-dom: "npm:^18.2.0"
+    react-icons: "npm:^4.11.0"
+    react-router-dom: "npm:^6.18.0"
+    styled-components: "npm:^6.1.0"
+    vite: "npm:^4.4.5"
+  languageName: unknown
+  linkType: soft
+
 "clsx@npm:^2.0.0":
   version: 2.0.0
   resolution: "clsx@npm:2.0.0"
@@ -3295,30 +3319,6 @@ __metadata:
   checksum: 78ad6edb8309a2bfb720c2c1898f7907a37f858866ce11a5974643af1203a6a6e05b2fa9c53d8064a673a447b83d42569260c306d43628bff5bb101969708355
   languageName: node
   linkType: hard
-
-"restaurant_proj@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "restaurant_proj@workspace:."
-  dependencies:
-    "@emotion/react": "npm:^11.11.1"
-    "@emotion/styled": "npm:^11.11.0"
-    "@mui/material": "npm:^5.14.15"
-    "@mui/styled-engine-sc": "npm:^6.0.0-alpha.3"
-    "@types/react": "npm:^18.2.15"
-    "@types/react-dom": "npm:^18.2.7"
-    "@vitejs/plugin-react-swc": "npm:^3.3.2"
-    eslint: "npm:^8.45.0"
-    eslint-plugin-react: "npm:^7.32.2"
-    eslint-plugin-react-hooks: "npm:^4.6.0"
-    eslint-plugin-react-refresh: "npm:^0.4.3"
-    react: "npm:^18.2.0"
-    react-dom: "npm:^18.2.0"
-    react-icons: "npm:^4.11.0"
-    react-router-dom: "npm:^6.18.0"
-    styled-components: "npm:^6.1.0"
-    vite: "npm:^4.4.5"
-  languageName: unknown
-  linkType: soft
 
 "retry@npm:^0.12.0":
   version: 0.12.0

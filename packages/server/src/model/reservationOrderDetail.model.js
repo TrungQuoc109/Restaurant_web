@@ -2,8 +2,8 @@ import { Sequelize, DataTypes } from "sequelize";
 import { sequelize } from "../database/index.js";
 import { TakeOutOrder, Reservation } from "./index.model.js";
 
-const OrderDetail = sequelize.define(
-    "OrderDetail",
+const ReservationOrderDetail = sequelize.define(
+    "ReservationOrderDetail",
     {
         id: {
             type: DataTypes.INTEGER,
@@ -21,37 +21,27 @@ const OrderDetail = sequelize.define(
         order_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+                model: "Reservation",
+                key: "id",
+            },
         },
-        order_id_type: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        quantiny: {
+
+        quantity: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+
         note: DataTypes.TEXT,
         amount: {
             type: DataTypes.DECIMAL(10, 2),
         },
     },
     {
-        modelName: "OrderDetail",
-        tableName: "OrderDetail",
+        modelName: "ReservationOrderDetail",
+        tableName: "ReservationOrderDetail",
         timestamps: false,
     }
 );
-OrderDetail.belongsTo(TakeOutOrder, {
-    foreignKey: "order_id",
-    targetKey: "id",
-    constraints: false,
-    scope: { order_id_type: "takeoutOrder" },
-});
-OrderDetail.belongsTo(Reservation, {
-    foreignKey: "order_id",
-    targetKey: "id",
-    constraints: false,
-    scope: { order_id_type: "reservation" },
-});
 
-export { OrderDetail };
+export { ReservationOrderDetail };

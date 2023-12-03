@@ -1,5 +1,9 @@
 import { Account, Customer } from "../model/index.model.js";
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
+dotenv.config();
+const key = process.env.JWT_KEY ?? "local";
 export class accountService {
     static instance;
     static getInstance() {
@@ -21,9 +25,18 @@ export class accountService {
                 );
 
                 if (passwordMatch) {
-                    req.session.user = account;
-                    req.session.user.password = password;
-                    res.status(200).json({ message: "Login successful!" });
+                    const token = jwt.sign(
+                        {
+                            id: account.id,
+                            username: account.username,
+                            password: password,
+                            role: account.role,
+                        },
+                        process.env.JWT_KEY,
+                        { expiresIn: "24h" }
+                    );
+
+                    res.status(200).json({ token });
                 } else {
                     res.status(401).json({ message: "Login failed" });
                 }
@@ -32,7 +45,6 @@ export class accountService {
             }
         } catch (error) {
             console.error("Error during login:", error);
-
             res.status(500).json({ message: "Internal Server Error" });
         }
     }
@@ -64,23 +76,21 @@ export class accountService {
                 account_ID: newUser.id,
                 phone: register.phone,
             });
-            req.session.user = newUser;
-
-            res.status(201).json({ message: "User registered successfully!" });
+            const token = jwt.sign(
+                {
+                    id: newUser.id,
+                    username: newUser.username,
+                    password: password,
+                    role: newUser.role,
+                },
+                process.env.JWT_KEY,
+                { expiresIn: "24h" }
+            );
+            res.status(200).json({ token });
         } catch (error) {
             console.error("Error during registration:", error);
             res.status(500).json({ message: "Internal Server Error" });
         }
-    }
-    async logout(req, res) {
-        req.session.destroy((err) => {
-            if (err) {
-                console.error("Error destroying session:", err);
-                res.status(500).json({ message: "Internal Server Error" });
-            } else {
-                res.status(200).json({ message: "Logout" });
-            }
-        });
     }
 }
 

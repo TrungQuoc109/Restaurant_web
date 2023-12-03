@@ -1,17 +1,9 @@
 import { Router } from "express";
-import * as controller from "../controller/index.js";
-import { checkAuth, checkLogin } from "../middleware/checkLogin.js";
+import { AccountControllerInstance } from "../controller/index.js";
+import { checkAuth, checkLogin } from "../middleware/middleware.js";
 const accountRoute = Router();
 
-accountRoute.post(
-    "/login",
-    checkLogin,
-    controller.AccountControllerInstance.login
-);
-accountRoute.post("/register", controller.AccountControllerInstance.register);
-accountRoute.post(
-    "/logout",
-    checkAuth,
-    controller.AccountControllerInstance.logout
-);
+accountRoute.post("/login", checkLogin, AccountControllerInstance.login);
+accountRoute.post("/register", AccountControllerInstance.register);
+
 export default accountRoute;

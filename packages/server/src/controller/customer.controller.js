@@ -1,4 +1,4 @@
-import * as service from "../service/index.js";
+import { customerServiceInstance } from "../service/index.js";
 
 export class CustomerController {
     static instance;
@@ -9,13 +9,13 @@ export class CustomerController {
         return this.instance;
     }
     async getProfile(req, res) {
-        return await service.customerServiceInstance.getProfile(req, res);
+        return await customerServiceInstance.getProfile(req, res);
     }
     async updateProfile(req, res) {
-        return await service.customerServiceInstance.updateProfile(req, res);
+        return await customerServiceInstance.updateProfile(req, res);
     }
     async takeoutOrder(req, res) {
-        return await service.customerServiceInstance.takeoutOrder(req, res);
+        return await customerServiceInstance.takeoutOrder(req, res);
     }
 }
 export const CustomerControllerInstance = CustomerController.getInstance();

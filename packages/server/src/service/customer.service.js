@@ -1,4 +1,10 @@
-import { Account, Customer, TakeOutOrder } from "../model/index.model.js";
+import {
+    Account,
+    Customer,
+    TakeOutOrder,
+    TakeOutOrderDetail,
+    Item,
+} from "../model/index.model.js";
 import bcrypt from "bcrypt";
 export class CustomerService {
     static instance;
@@ -11,10 +17,10 @@ export class CustomerService {
     async getProfile(req, res) {
         try {
             const customer = await Customer.findOne({
-                where: { account_ID: req.session.user.id },
+                where: { account_ID: req.account.id },
             });
             const cus = customer.toJSON();
-            cus.password = req.session.user.password;
+            cus.password = req.account.password;
             if (customer) {
                 res.status(200).json(cus);
             } else res.status(404).json({ message: "Not found!" });
@@ -26,9 +32,9 @@ export class CustomerService {
     async updateProfile(req, res) {
         try {
             const customer = await Customer.findOne({
-                where: { account_ID: req.session.user.id },
+                where: { account_ID: req.account.id },
             });
-            const account = await Account.findByPk(req.session.user.id);
+            const account = await Account.findByPk(req.account.id);
             if (!customer) {
                 res.status(404).json({ message: "Customer not found!" });
             }
@@ -40,7 +46,7 @@ export class CustomerService {
                     (await bcrypt.hash(req.body.password, 10)) ??
                     account.password;
                 account.save();
-                req.session.user.password = req.body.password;
+                req.account.password = req.body.password;
             }
             res.status(200).json({
                 message: "Customer information updated successfully",
@@ -51,31 +57,44 @@ export class CustomerService {
         }
     }
     async takeoutOrder(req, res) {
-        //         {
-        //     "address": "180 Cao Lỗ",
-        //     "note":"something or not",
-        //     "item":{
-        //         "1":,
-        //         "2":"món B",
-        //         "3":"món C"
-        //     }
-        // }
-
         try {
-            const now = new Date();
             const cus = await Customer.findOne({
-                where: { account_ID: req.session.user.id },
+                where: { account_ID: req.account.id },
             });
-
+            if (!req.body.address) {
+                return res.status(404).json({ message: "Address not found!" });
+            }
             const order = await TakeOutOrder.create({
                 customer_ID: cus.id,
                 address: req.body.address,
                 note: req.body.note ?? "",
                 status: 0,
             });
-            const test = await TakeOutOrder.findByPk(order.id);
-            console.log("Order ", test.toJSON());
-            return res.status(200).json({ message: "tạo đơn thành công" });
+            const item_list = req.body.item;
+
+            if (
+                !item_list ||
+                !Array.isArray(item_list) ||
+                item_list.length === 0
+            ) {
+                return res.status(400).json({ message: "Invalid list item" });
+            }
+
+            const detailsPromises = item_list.map(async (item) => {
+                return TakeOutOrderDetail.create({
+                    item_id: item.id,
+                    order_id: order.id,
+                    quantity: item.quantity ?? 1,
+                    note: item.item_note ?? "",
+                });
+            });
+
+            await Promise.all(detailsPromises);
+            const takeOut_Oder = await TakeOutOrder.findOne({
+                where: { id: order.id },
+                include: [TakeOutOrderDetail],
+            });
+            return res.status(200).json({ takeOut_Oder });
         } catch (error) {
             console.log("Error: ", error);
             res.status(500).json({ message: "Internal Server Error" });

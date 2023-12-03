@@ -7,4 +7,5 @@ export * from "./reservation.model.js";
 export * from "./table.model.js";
 export * from "./takeoutOrder.model.js";
 export * from "./ItemImage.model.js";
-export * from "./orderDetail.model.js";
+export * from "./takeoutOrderDetail.model.js";
+export * from "./reservationOrderDetail.model.js";

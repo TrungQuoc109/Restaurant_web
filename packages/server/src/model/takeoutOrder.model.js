@@ -1,5 +1,6 @@
 import { Sequelize, DataTypes } from "sequelize";
 import { sequelize } from "../database/index.js";
+import { TakeOutOrderDetail } from "./takeoutOrderDetail.model.js";
 
 const TakeOutOrder = sequelize.define(
     "TakeOutOrder",
@@ -39,4 +40,7 @@ const TakeOutOrder = sequelize.define(
         timestamps: false,
     }
 );
+TakeOutOrder.hasMany(TakeOutOrderDetail, {
+    foreignKey: "order_id",
+});
 export { TakeOutOrder };

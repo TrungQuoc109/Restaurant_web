@@ -1,8 +1,9 @@
 {
-  "name": "restaurant_proj",
+  "name": "client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "yarn@4.0.1",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
