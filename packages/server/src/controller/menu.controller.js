@@ -14,5 +14,8 @@ export class MenuController {
     async getItemDetail(req, res) {
         return await menuServiceInstance.getItemDetail(req, res);
     }
+    async updateItem(req, res) {
+        return await menuServiceInstance.updateItem(req, res);
+    }
 }
 export const menuControllerInstance = MenuController.getInstance();

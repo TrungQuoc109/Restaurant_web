@@ -1,5 +1,6 @@
 import { sequelize } from "../database/index.js";
 import { Sequelize, DataTypes } from "sequelize";
+import { ItemImages } from "./ItemImage.model.js";
 
 const Item = sequelize.define(
     "Item",
@@ -35,5 +36,7 @@ const Item = sequelize.define(
         timestamps: false,
     }
 );
-
+Item.hasMany(ItemImages, {
+    foreignKey: "item_id",
+});
 export { Item };

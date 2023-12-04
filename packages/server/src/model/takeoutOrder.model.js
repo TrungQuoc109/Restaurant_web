@@ -33,6 +33,9 @@ const TakeOutOrder = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        totalprice: {
+            type: DataTypes.DECIMAL(10, 2),
+        },
     },
     {
         model: "TakeOutOrder",

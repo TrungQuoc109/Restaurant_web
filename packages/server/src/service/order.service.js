@@ -49,8 +49,6 @@ export class orderService {
                         return order;
                     })
                 );
-
-            // Sắp xếp mảng theo ngày gần nhất
             combinedOrders.sort(
                 (a, b) => new Date(b.order_date) - new Date(a.order_date)
             );
@@ -66,13 +64,23 @@ export class orderService {
             const id = req.params.id;
 
             const order_detail = await TakeOutOrder.findOne({
-                attributes: ["id", "order_date", "address", "note", "status"],
+                attributes: [
+                    "id",
+                    "order_date",
+                    "address",
+                    "note",
+                    "status",
+                    "totalprice",
+                ],
                 where: { id: id },
                 raw: true,
             });
-            if (order_detail == null) {
-                return res.status(404).json({ message: "Order not found" });
+            if (!order_detail) {
+                return res
+                    .status(404)
+                    .json({ message: " Takeout order not found" });
             }
+            console.log(order_detail.order_date);
             order_detail.order_date = moment(order_detail.order_date).format(
                 "DD/MM/YYYY HH:mm"
             );
@@ -95,13 +103,22 @@ export class orderService {
             const id = req.params.id;
             const order_detail = null;
             order_detail = await Reservation.findOne({
-                attributes: ["id", "order_date", "address", "note", "status"],
+                attributes: [
+                    "id",
+                    "order_date",
+                    "table_id",
+                    "appointment_date",
+                    "note",
+                    "status",
+                    "totalprice",
+                ],
                 where: { id: id },
                 raw: true,
             });
             if (!order_detail) {
                 return res.status(404).json({ message: "Order not found" });
             }
+
             order_detail.order_date = moment(order_detail.order_date).format(
                 "DD/MM/YYYY HH:mm"
             );

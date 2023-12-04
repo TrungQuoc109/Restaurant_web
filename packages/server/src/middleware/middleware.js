@@ -33,4 +33,5 @@ const checkLogin = (req, res, next) => {
         next();
     }
 };
+
 export { checkAdmin, checkAuth, checkLogin };

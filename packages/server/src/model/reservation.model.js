@@ -1,5 +1,6 @@
 import { Sequelize, DataTypes } from "sequelize";
 import { sequelize } from "../database/index.js";
+import { ReservationOrderDetail } from "./reservationOrderDetail.model.js";
 
 const Reservation = sequelize.define(
     "Reservation",
@@ -40,6 +41,9 @@ const Reservation = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        totalprice: {
+            type: DataTypes.DECIMAL(10, 2),
+        },
     },
     {
         model: "Reservation",
@@ -47,4 +51,7 @@ const Reservation = sequelize.define(
         timestamps: false,
     }
 );
+Reservation.hasMany(ReservationOrderDetail, {
+    foreignKey: "order_id",
+});
 export { Reservation };

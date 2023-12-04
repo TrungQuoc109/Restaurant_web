@@ -4,6 +4,8 @@ import {
     TakeOutOrder,
     TakeOutOrderDetail,
     Item,
+    Reservation,
+    ReservationOrderDetail,
 } from "../model/index.model.js";
 import bcrypt from "bcrypt";
 export class CustomerService {
@@ -61,6 +63,9 @@ export class CustomerService {
             const cus = await Customer.findOne({
                 where: { account_ID: req.account.id },
             });
+            if (!cus)
+                return res.status(404).json({ message: "Customer not found!" });
+
             if (!req.body.address) {
                 return res.status(404).json({ message: "Address not found!" });
             }
@@ -77,7 +82,7 @@ export class CustomerService {
                 !Array.isArray(item_list) ||
                 item_list.length === 0
             ) {
-                return res.status(400).json({ message: "Invalid list item" });
+                return res.status(201).json({ message: "Invalid list item" });
             }
 
             const detailsPromises = item_list.map(async (item) => {
@@ -100,7 +105,63 @@ export class CustomerService {
             res.status(500).json({ message: "Internal Server Error" });
         }
     }
-    async reservation(req, res) {}
+    async reservation(req, res) {
+        try {
+            try {
+                const cus = await Customer.findOne({
+                    where: { account_ID: req.account.id },
+                });
+                if (!req.body.address) {
+                    return res
+                        .status(404)
+                        .json({ message: "Address not found!" });
+                }
+                const appointment_date =
+                    req.body.appointment_date + req.body.appointment_time;
+                formattedDate = moment(
+                    appointment_date,
+                    "DD/MM/YYYY HH:mm"
+                ).format("YYYY-MM-DD HH:mm:ss");
+                const order = await Reservation.create({
+                    customer_ID: cus.id,
+                    table_ID: req.body.table_ID,
+                    appointment_date: appointment_date,
+                    note: req.body.note ?? "",
+                    status: 0,
+                });
+                const item_list = req.body.item;
+
+                if (
+                    !item_list ||
+                    !Array.isArray(item_list) ||
+                    item_list.length === 0
+                ) {
+                    return res
+                        .status(400)
+                        .json({ message: "Reservation successfully created." });
+                }
+
+                const detailsPromises = item_list.map(async (item) => {
+                    return ReservationOrderDetail.create({
+                        item_id: item.id,
+                        order_id: order.id,
+                        quantity: item.quantity ?? 1,
+                        note: item.item_note ?? "",
+                    });
+                });
+
+                await Promise.all(detailsPromises);
+                const takeOut_Oder = await TakeOutOrder.findOne({
+                    where: { id: order.id },
+                    include: [ReservationOrderDetail],
+                });
+                return res.status(200).json({ takeOut_Oder });
+            } catch (error) {
+                console.log("Error: ", error);
+                res.status(500).json({ message: "Internal Server Error" });
+            }
+        } catch (error) {}
+    }
     async feedback(req, res) {}
 }
 
