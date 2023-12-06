@@ -13,7 +13,7 @@ import TextField from "@mui/material/TextField";
 import { InputLabel } from "@mui/material";
 import Footer from "../../footer";
 
-function Datbanpage() {
+function BookingTablePage() {
   const handleSubmit = () => {
     console.log("Form submitted!");
   };
@@ -43,17 +43,6 @@ function Datbanpage() {
     "21:15",
     "21:30",
   ];
-  const [selectedTables, setSelectedTables] = useState([]);
-
-  const handleTableChange = (tableNumber) => {
-    if (selectedTables.includes(tableNumber)) {
-      setSelectedTables(
-        selectedTables.filter((table) => table !== tableNumber)
-      );
-    } else {
-      setSelectedTables([...selectedTables, tableNumber]);
-    }
-  };
 
   // Create an array representing 10 tables
   const tables = Array.from({ length: 10 }, (_, index) => index + 1);
@@ -86,7 +75,7 @@ function Datbanpage() {
               required
               id="contactNumber"
               name="contactNumber"
-              label="Số điện thoại hoặc email"
+              label="Số điện thoại"
               fullWidth
               autoComplete="tel"
               variant="standard"
@@ -103,18 +92,7 @@ function Datbanpage() {
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              required
-              id="contactNumber"
-              name="contactNumber"
-              label="Số điện thoại hoặc email"
-              fullWidth
-              autoComplete="tel"
-              variant="standard"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12}>
             <TextField
               required
               id="bookingDate"
@@ -173,21 +151,6 @@ function Datbanpage() {
             </Select>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="body2">Choose Tables:</Typography>
-            <Grid container spacing={2}>
-              {tables.map((tableNumber) => (
-                <Grid item key={tableNumber}>
-                  <Checkbox
-                    checked={selectedTables.includes(tableNumber)}
-                    onChange={() => handleTableChange(tableNumber)}
-                    inputProps={{ "aria-label": `Table ${tableNumber}` }}
-                  />
-                  <Typography variant="body2">{`Table ${tableNumber}`}</Typography>
-                </Grid>
-              ))}
-            </Grid>
-          </Grid>
-          <Grid item xs={12}>
             <TextField
               id="specialRequests"
               name="specialRequests"
@@ -205,13 +168,9 @@ function Datbanpage() {
           </Grid>
         </Grid>
       </Container>
-      <br />
-      <br />
-      <br />
-      <br />
       <Footer />
     </Grid>
   );
 }
 
-export default Datbanpage;
+export default BookingTablePage;

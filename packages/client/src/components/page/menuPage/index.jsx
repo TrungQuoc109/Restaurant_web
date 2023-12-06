@@ -64,7 +64,7 @@ function Menupage() {
                   backgroundColor:
                     selectedCategory === null ? "#434343" : "#a80e0e",
                 },
-                padding: "10px 30px",
+                padding: "0.6rem 2rem",
                 borderRadius: 30,
               }}
             >
@@ -84,7 +84,7 @@ function Menupage() {
                     selectedCategory === "lau" ? "#434343" : "#a80e0e",
                 },
                 marginLeft: -2,
-                padding: "10px 50px",
+                padding: "0.6rem 2rem",
                 borderRadius: 30,
               }}
             >
@@ -104,7 +104,7 @@ function Menupage() {
                     selectedCategory === "nuong" ? "#434343" : "#a80e0e",
                 },
                 marginLeft: -4,
-                padding: "10px 50px",
+                padding: "0.6rem 2rem",
                 borderRadius: 30,
               }}
             >
@@ -124,7 +124,7 @@ function Menupage() {
                     selectedCategory === "cuon" ? "#434343" : "#a80e0e",
                 },
                 marginLeft: -6,
-                padding: "10px 50px",
+                padding: "0.6rem 2rem",
                 borderRadius: 30,
               }}
             >
