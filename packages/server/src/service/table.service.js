@@ -9,33 +9,15 @@ export class TableService {
     }
     async addTable(req, res) {
         try {
-            // Insert 10 tables with capacity 4
-            for (let i = 0; i < 10; i++) {
-                await Table.create({
-                    capacity: 4,
-                    status: 1,
-                });
-            }
+            const capacity = req.body.capacity;
+            if (!capacity || isNaN(capacity))
+                return res.status(400).json({ message: "Invalid capacity" });
+            const table = await Table.create({
+                capacity: capacity,
+                status: 0,
+            });
 
-            // Insert 5 tables with capacity 8
-            for (let i = 0; i < 5; i++) {
-                await Table.create({
-                    capacity: 8,
-                    status: 1,
-                });
-            }
-
-            // Insert 5 tables with capacity 12
-            for (let i = 0; i < 5; i++) {
-                await Table.create({
-                    capacity: 12,
-                    status: 1,
-                });
-            }
-
-            return res
-                .status(200)
-                .json({ message: "Example data inserted successfully." });
+            return res.status(200).json(table);
         } catch (error) {
             res.status(500).json({ message: "Internal Server Error" });
         }
@@ -45,7 +27,6 @@ export class TableService {
             const table = await Table.findAll({
                 raw: true,
             });
-            //console.log(table);
             return res.status(200).json(table);
         } catch (error) {
             res.status(500).json({ message: "Internal Server Error" });

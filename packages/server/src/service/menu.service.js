@@ -9,12 +9,23 @@ export class MenuService {
     }
     async getMenu(req, res) {
         try {
-            const menu = await Item.findAll({
+            const menuItem = await Item.findAll({
                 attributes: ["id", "name", "price", "category"],
+                include: {
+                    model: ItemImages,
+                    attributes: ["imageData"],
+                },
                 raw: true,
             });
-            return res.status(200).json(menu);
+            const menuWithImages = menuItem.map((item) => ({
+                ...item,
+                imageData: item.ItemImage
+                    ? item.ItemImage.imageData.toString("base64")
+                    : null,
+            }));
+            return res.status(200).json(menuWithImages);
         } catch (error) {
+            console.log(error);
             res.status(500).json({ message: "Internal Server Error" });
         }
     }
@@ -25,13 +36,16 @@ export class MenuService {
                 where: { id: id },
                 raw: true,
             });
-            item.image = await ItemImages.findOne({
-                where: { item_id: id },
-                raw: true,
-            });
-            if (item.image)
-                item.image.imageData = item.image.imageData.toString("base64");
+
             if (item) {
+                item.image = await ItemImages.findOne({
+                    attributes: ["imageData"],
+                    where: { item_id: id },
+                    raw: true,
+                });
+                if (item.image)
+                    item.image.imageData =
+                        item.image.imageData.toString("base64");
                 return res.status(200).json(item);
             } else {
                 return res.status(404).json({ message: "Item not found" });
@@ -58,10 +72,18 @@ export class MenuService {
             };
             await Item.update(updateData, { where: { id: id } });
             if (imageBuffer) {
-                const savedImage = await ItemImages.create({
-                    item_id: id,
-                    imageData: imageBuffer,
+                const existingImage = await ItemImages.findOne({
+                    where: { item_id: id },
                 });
+                if (existingImage) {
+                    existingImage.imageData = imageBuffer;
+                    await existingImage.save();
+                } else {
+                    const savedImage = await ItemImages.create({
+                        item_id: id,
+                        imageData: imageBuffer,
+                    });
+                }
             }
             res.status(201).json({ message: "Item updated successfully" });
         } catch (error) {

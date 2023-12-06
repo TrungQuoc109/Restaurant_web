@@ -1,6 +1,6 @@
 import { Sequelize, DataTypes } from "sequelize";
 import { sequelize } from "../database/index.js";
-import { TakeOutOrder, Reservation } from "./index.model.js";
+import { TakeOutOrder, Reservation, Item } from "./index.model.js";
 
 const ReservationOrderDetail = sequelize.define(
     "ReservationOrderDetail",
@@ -43,5 +43,5 @@ const ReservationOrderDetail = sequelize.define(
         timestamps: false,
     }
 );
-
+ReservationOrderDetail.belongsTo(Item, { foreignKey: "item_id" });
 export { ReservationOrderDetail };

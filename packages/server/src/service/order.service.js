@@ -80,7 +80,7 @@ export class orderService {
                     .status(404)
                     .json({ message: " Takeout order not found" });
             }
-            console.log(order_detail.order_date);
+            //  console.log(order_detail.order_date);
             order_detail.order_date = moment(order_detail.order_date).format(
                 "DD/MM/YYYY HH:mm"
             );
@@ -101,13 +101,13 @@ export class orderService {
     async getReservationOrderDetail(req, res) {
         try {
             const id = req.params.id;
-            const order_detail = null;
-            order_detail = await Reservation.findOne({
+            const order_detail = await Reservation.findOne({
                 attributes: [
                     "id",
                     "order_date",
                     "table_id",
                     "appointment_date",
+                    "appointment_time",
                     "note",
                     "status",
                     "totalprice",
@@ -120,11 +120,11 @@ export class orderService {
             }
 
             order_detail.order_date = moment(order_detail.order_date).format(
-                "DD/MM/YYYY HH:mm"
+                "DD/MM/YYYY"
             );
             order_detail.appointment_date = moment(
                 order_detail.appointment_date
-            ).format("DD/MM/YYYY HH:mm");
+            ).format("DD/MM/YYYY");
             order_detail.detail = await ReservationOrderDetail.findAll({
                 attributes: ["quantity", "note", "amount"],
                 where: { order_id: id },
@@ -135,6 +135,7 @@ export class orderService {
             });
             return res.status(200).json({ order_detail });
         } catch (error) {
+            console.log(error);
             res.status(500).json({ message: "Internal Server Error" });
         }
     }

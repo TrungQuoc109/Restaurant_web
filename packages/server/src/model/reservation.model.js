@@ -34,6 +34,15 @@ const Reservation = sequelize.define(
             type: DataTypes.DATE,
             allowNull: false,
         },
+        appointment_time: {
+            type: DataTypes.TIME,
+            allowNull: false,
+        },
+        number_of_guests: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 1,
+        },
         note: {
             type: DataTypes.TEXT,
         },

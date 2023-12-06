@@ -32,7 +32,7 @@ export class accountService {
                             password: password,
                             role: account.role,
                         },
-                        process.env.JWT_KEY,
+                        key,
                         { expiresIn: "24h" }
                     );
 
@@ -83,7 +83,7 @@ export class accountService {
                     password: password,
                     role: newUser.role,
                 },
-                process.env.JWT_KEY,
+                key,
                 { expiresIn: "24h" }
             );
             res.status(200).json({ token });

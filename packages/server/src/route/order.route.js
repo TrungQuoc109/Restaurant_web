@@ -1,14 +1,20 @@
 import { Router } from "express";
 import { orderControllerInstance } from "../controller/index.js";
-import { checkAdmin, checkAuth } from "../middleware/middleware.js";
-import { checkType } from "../middleware/checktypeOrder.js";
+import { checkAdmin, checkAuth } from "../middleware/checkAccount.js";
+
 const orderRoute = Router();
 orderRoute.get("/", checkAuth, checkAdmin, orderControllerInstance.getOrder);
 orderRoute.get(
-    "/:id/:type",
+    "/:id/takeout",
     checkAuth,
     checkAdmin,
-    checkType,
     orderControllerInstance.getTakeOutOrderDetail
 );
+orderRoute.get(
+    "/:id/reservation",
+    checkAuth,
+    checkAdmin,
+    orderControllerInstance.getReservationOrderDetail
+);
+
 export default orderRoute;

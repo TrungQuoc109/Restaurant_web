@@ -17,5 +17,8 @@ export class CustomerController {
     async takeoutOrder(req, res) {
         return await customerServiceInstance.takeoutOrder(req, res);
     }
+    async reservation(req, res) {
+        return await customerServiceInstance.reservation(req, res);
+    }
 }
 export const CustomerControllerInstance = CustomerController.getInstance();

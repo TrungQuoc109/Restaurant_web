@@ -1,16 +1,26 @@
-// export class CustomerService {
-//     static instance;
-//     static getInstance() {
-//         if (!this.instance) {
-//             this.instance = new CustomerService();
-//         }
-//         return this.instance;
-//     }
-//     async getProfile(req, res) {}
-//     async updateProfile(req, res) {}
-//     async takeoutOrder(req, res) {}
-//     async reservation(req, res) {}
-//     async feedback(req, res) {}
-// }
+import { Employee } from "../model/index.model.js";
+export class ManagerService {
+    static instance;
+    static getInstance() {
+        if (!this.instance) {
+            this.instance = new ManagerService();
+        }
+        return this.instance;
+    }
 
-// export const customerServiceInstance = CustomerService.getInstance();
+    async getEmployee(req, res) {
+        try {
+            const employee = await Employee.findAll({
+                raw: true,
+            });
+            if (!employee)
+                return res.status(404).json({ message: "Employee not found" });
+            return res.status(200).json(employee);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: "Internal Server Error" });
+        }
+    }
+}
+
+export const managerServiceInstance = ManagerService.getInstance();
