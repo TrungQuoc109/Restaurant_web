@@ -7,12 +7,24 @@ import {
   Typography,
   Button,
   Container,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import ResponsiveAppBar from "../../Nav-bar";
 import Footer from "../../footer";
 
 function Menupage() {
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
 
   const products = [
     {
@@ -38,100 +50,53 @@ function Menupage() {
     },
   ];
 
-  const handleCategoryButtonClick = (category) => {
-    setSelectedCategory(category === selectedCategory ? null : category);
-    console.log(`Category button "${category}" clicked`);
-  };
-
-  const filteredProducts = selectedCategory
-    ? products.filter((product) => product.category === selectedCategory)
-    : products;
+  const filteredProducts = products.filter((product) => {
+    if (searchQuery && !selectedCategory) {
+      return product.name.toLowerCase().includes(searchQuery.toLowerCase());
+    } else if (selectedCategory && !searchQuery) {
+      return product.category === selectedCategory;
+    } else if (selectedCategory && searchQuery) {
+      return (
+        product.category === selectedCategory &&
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    } else {
+      return products;
+    }
+  });
 
   return (
-    <div>
+    <Grid>
       <ResponsiveAppBar />
       <Container>
         <Grid container spacing={3} marginTop={1}>
           <Grid item>
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={() => handleCategoryButtonClick(null)}
-              sx={{
-                backgroundColor:
-                  selectedCategory === null ? "#a80e0e" : "#434343",
-                "&:hover": {
-                  backgroundColor:
-                    selectedCategory === null ? "#434343" : "#a80e0e",
-                },
-                padding: "0.6rem 2rem",
-                borderRadius: 30,
-              }}
-            >
-              ALL
-            </Button>
+            <TextField
+              label="Search"
+              variant="outlined"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
           </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={() => handleCategoryButtonClick("lau")}
-              sx={{
-                backgroundColor:
-                  selectedCategory === "lau" ? "#a80e0e" : "#434343",
-                "&:hover": {
-                  backgroundColor:
-                    selectedCategory === "lau" ? "#434343" : "#a80e0e",
-                },
-                marginLeft: -2,
-                padding: "0.6rem 2rem",
-                borderRadius: 30,
-              }}
-            >
-              LẨU
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={() => handleCategoryButtonClick("nuong")}
-              sx={{
-                backgroundColor:
-                  selectedCategory === "nuong" ? "#a80e0e" : "#434343",
-                "&:hover": {
-                  backgroundColor:
-                    selectedCategory === "nuong" ? "#434343" : "#a80e0e",
-                },
-                marginLeft: -4,
-                padding: "0.6rem 2rem",
-                borderRadius: 30,
-              }}
-            >
-              Nướng
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={() => handleCategoryButtonClick("cuon")}
-              sx={{
-                backgroundColor:
-                  selectedCategory === "cuon" ? "#a80e0e" : "#434343",
-                "&:hover": {
-                  backgroundColor:
-                    selectedCategory === "cuon" ? "#434343" : "#a80e0e",
-                },
-                marginLeft: -6,
-                padding: "0.6rem 2rem",
-                borderRadius: 30,
-              }}
-            >
-              Cuốn
-            </Button>
+          <Grid item sx={{ minWidth: "12rem" }}>
+            <FormControl fullWidth>
+              <InputLabel id="category-select-label">Category</InputLabel>
+              <Select
+                labelId="category-select-label"
+                id="category-select"
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+                label="Category"
+              >
+                <MenuItem value="">All</MenuItem>
+                <MenuItem value="lau">LẨU</MenuItem>
+                <MenuItem value="nuong">Nướng</MenuItem>
+                <MenuItem value="cuon">Cuốn</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
         </Grid>
+
         <Grid container spacing={3} marginTop={1}>
           {filteredProducts.map((product) => (
             <Grid item xs={12} sm={6} md={4} key={product.id}>
@@ -165,7 +130,7 @@ function Menupage() {
         </Grid>
       </Container>
       <Footer />
-    </div>
+    </Grid>
   );
 }
 
