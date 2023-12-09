@@ -15,6 +15,7 @@ import { BiSearch } from "react-icons/bi";
 import { Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 import { MdOutlineShoppingCart } from "react-icons/md";
+import ShoppingCartModel from "../cart";
 
 const pages = ["MENU", "THÔNG TIN NHÀ HÀNG", "KHUYẾN MÃI", "ĐẶT BÀN", "TƯ VẤN"];
 const settings = ["Đăng nhập", "Đăng ký"];
@@ -22,6 +23,7 @@ const settings = ["Đăng nhập", "Đăng ký"];
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [openCart, setOpenCart] = React.useState(false);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -33,6 +35,13 @@ function ResponsiveAppBar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+  const handleOpenCart = () => {
+    setOpenCart(true);
+  };
+
+  const handleCloseCart = () => {
+    setOpenCart(false);
   };
 
   return (
@@ -54,7 +63,7 @@ function ResponsiveAppBar() {
                   page === "MENU"
                     ? "/menuPage"
                     : page === "ĐẶT BÀN"
-                    ? "/datbanPage"
+                    ? "/BookingTablePage"
                     : `/${page.toLowerCase().replace(" ", "-")}`
                 }
                 onClick={handleCloseNavMenu}
@@ -69,7 +78,7 @@ function ResponsiveAppBar() {
               container
               alignItems="center"
               sx={{
-                border: "1px solid #ccc",
+                border: "1 solid #ccc",
                 borderRadius: "9rem",
                 background: "#fff",
                 padding: "0.3rem",
@@ -78,7 +87,7 @@ function ResponsiveAppBar() {
               <InputBase
                 sx={{ flex: 1 }}
                 placeholder="Tìm kiếm..."
-                inputProps={{ "aria-label": "Tìm kiếm..." }}
+                inputProps={{ "": "Tìm kiếm..." }}
               />
               <Grid item>
                 <IconButton type="button" aria-label="search">
@@ -90,29 +99,32 @@ function ResponsiveAppBar() {
 
           <Box sx={{ position: "relative" }}>
             <Tooltip title="Open settings">
-              <IconButton
-                sx={{
-                  backgroundColor: "#bdbdbd",
-                  borderRadius: "50%",
-                  padding: "1rem",
-                  mr: 1,
-                }}
-              >
-                <MdOutlineShoppingCart />
-              </IconButton>
-              <IconButton
-                onClick={handleOpenUserMenu}
-                sx={{
-                  backgroundColor: "#bdbdbd",
-                  borderRadius: "50%",
-                  padding: "0.5rem",
-                }}
-              >
-                <Avatar alt="Remy Sharp" />
-              </IconButton>
+              <div>
+                <IconButton
+                  onClick={handleOpenCart}
+                  sx={{
+                    backgroundColor: "#bdbdbd",
+                    borderRadius: "50%",
+                    padding: "1rem",
+                    mr: 1,
+                  }}
+                >
+                  <MdOutlineShoppingCart />
+                </IconButton>
+                <IconButton
+                  onClick={handleOpenUserMenu}
+                  sx={{
+                    backgroundColor: "#bdbdbd",
+                    borderRadius: "50%",
+                    padding: "0.5rem",
+                  }}
+                >
+                  <Avatar />
+                </IconButton>
+              </div>
             </Tooltip>
+
             <Menu
-              sx={{ mt: "45px" }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -136,6 +148,11 @@ function ResponsiveAppBar() {
           </Box>
         </Toolbar>
       </Container>
+      <Box sx={{ position: "relative" }}>
+        {/* Updated IconButton to trigger the opening of the cart model */}
+        <ShoppingCartModel open={openCart} handleClose={handleCloseCart} />
+        {/* Pass open state and close function to ShoppingCartModel */}
+      </Box>
     </AppBar>
   );
 }
