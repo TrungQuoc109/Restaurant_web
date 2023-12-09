@@ -5,12 +5,14 @@ import {
     checkReservationOrder,
     checkTakeoutOrder,
 } from "../middleware/invalidOrder.js";
+import { isInfoCustomer } from "../middleware/invalidInfo.js";
 const customerRoute = Router();
 
 customerRoute.get("/", checkAuth, CustomerControllerInstance.getProfile);
 customerRoute.post(
     "/updateprofile",
     checkAuth,
+    isInfoCustomer,
     CustomerControllerInstance.updateProfile
 );
 customerRoute.post(
@@ -25,4 +27,5 @@ customerRoute.post(
     checkReservationOrder,
     CustomerControllerInstance.reservation
 );
+
 export default customerRoute;

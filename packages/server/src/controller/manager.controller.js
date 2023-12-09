@@ -11,5 +11,17 @@ export class ManagerController {
     async getEmployee(req, res) {
         return await managerServiceInstance.getEmployee(req, res);
     }
+    async getEmployeeDetail(req, res) {
+        return await managerServiceInstance.getEmployeeDetail(req, res);
+    }
+    async addEmployee(req, res) {
+        return await managerServiceInstance.addEmployee(req, res);
+    }
+    async updateemployee(req, res) {
+        return await managerServiceInstance.updateemployee(req, res);
+    }
+    async deleteEmployee(req, res) {
+        return await managerServiceInstance.deleteEmployee(req, res);
+    }
 }
 export const managerControllerInstance = ManagerController.getInstance();

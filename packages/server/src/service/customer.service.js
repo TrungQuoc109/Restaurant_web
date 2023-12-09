@@ -70,7 +70,7 @@ export class CustomerService {
             });
             const item_list = req.body.item;
             const detailsPromises = item_list.map(async (item) => {
-                return TakeOutOrderDetail.create({
+                return await TakeOutOrderDetail.create({
                     item_id: item.id,
                     order_id: order.id,
                     quantity: item.quantity ?? 1,
@@ -81,8 +81,11 @@ export class CustomerService {
             await Promise.all(detailsPromises);
             const takeOut_Oder = await TakeOutOrder.findOne({
                 where: { id: order.id },
-                include: [TakeOutOrderDetail],
                 raw: true,
+            });
+            takeOut_Oder.item = await TakeOutOrderDetail.findAll({
+                attributes: ["item_id", "quantity", "note", "amount"],
+                where: { order_id: takeOut_Oder.id },
             });
             takeOut_Oder.order_date = moment(takeOut_Oder.order_date).format(
                 "DD/MM/YYYY HH:mm"
@@ -156,7 +159,6 @@ export class CustomerService {
             res.status(500).json({ message: "Internal Server Error" });
         }
     }
-    async feedback(req, res) {}
 }
 
 export const customerServiceInstance = CustomerService.getInstance();

@@ -11,6 +11,9 @@ export class OrderController {
     async getOrder(req, res) {
         return await orderServiceInstance.getOrder(req, res);
     }
+    async getOrderOfCustomer(req, res) {
+        return await orderServiceInstance.getOrderOfCustomer(req, res);
+    }
     async getTakeOutOrderDetail(req, res) {
         return await orderServiceInstance.getTakeOutOrderDetail(req, res);
     }

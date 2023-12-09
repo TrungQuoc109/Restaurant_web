@@ -1,4 +1,4 @@
-import { Account, Customer } from "../model/index.model.js";
+import { Account, Customer, Employee } from "../model/index.model.js";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
@@ -16,14 +16,28 @@ export class accountService {
         const username = req.body.username;
         const password = req.body.password;
         try {
-            const account = await Account.findOne({ where: { username } });
-            // console.log(account);
+            const account = await Account.findOne({
+                where: { username },
+                raw: true,
+            });
             if (account) {
                 const passwordMatch = await bcrypt.compare(
                     password,
                     account.password
                 );
-
+                console.log(account);
+                const user =
+                    account.role == 0
+                        ? await Customer.findOne({
+                              where: { account_ID: account.id },
+                              raw: true,
+                          })
+                        : await Employee.findOne({
+                              where: {
+                                  account_ID: account.id,
+                              },
+                              raw: true,
+                          });
                 if (passwordMatch) {
                     const token = jwt.sign(
                         {
@@ -31,11 +45,11 @@ export class accountService {
                             username: account.username,
                             password: password,
                             role: account.role,
+                            user_id: user.id,
                         },
                         key,
                         { expiresIn: "24h" }
                     );
-
                     res.status(200).json({ token });
                 } else {
                     res.status(401).json({ message: "Login failed" });
@@ -80,8 +94,9 @@ export class accountService {
                 {
                     id: newUser.id,
                     username: newUser.username,
-                    password: password,
+                    password: register.password,
                     role: newUser.role,
+                    customer_id: customer.id,
                 },
                 key,
                 { expiresIn: "24h" }

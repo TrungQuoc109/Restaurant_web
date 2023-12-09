@@ -14,13 +14,14 @@ const checkAuth = (req, res, next) => {
             return res.status(403).json({ message: "Forbidden" });
         }
         req.account = account;
-        //console.log(req.account);
+        //  console.log(req.account);
         next();
     });
 };
 
 const checkAdmin = (req, res, next) => {
-    if (req.account && req.account.role.data == 1) {
+    // console.log(req.account);
+    if (req.account && req.account.role == 1) {
         next();
     } else {
         res.status(403).send("You do not have access to the admin page.");

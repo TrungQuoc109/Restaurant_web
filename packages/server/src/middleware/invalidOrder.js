@@ -1,12 +1,8 @@
+import moment from "moment";
 const checkReservationOrder = (req, res, next) => {
-    const {
-        appointment_date,
-        appointment_time,
-        table_ID,
-        customer_ID,
-        number_of_guests,
-        note,
-    } = req.body;
+    const { appointment_date, appointment_time, table_ID, number_of_guests } =
+        req.body;
+    //const customer_ID = req.account.customer_id;
     if (
         !appointment_date ||
         !appointment_time ||
@@ -16,9 +12,10 @@ const checkReservationOrder = (req, res, next) => {
     )
         return res.status(400).json({ message: "Missing or invalid data." });
     const currentDate = new Date();
-    const appointmentDateTime = new Date(
-        `${appointment_date}T${appointment_time}`
+    const formatDate = moment(appointment_date, "DD/MM/YYYY").format(
+        "YYYY-MM-DD"
     );
+    const appointmentDateTime = new Date(`${formatDate}T${appointment_time}`);
     if (isNaN(appointmentDateTime) || appointmentDateTime < currentDate) {
         return res.status(400).json({
             message: "Invalid appointment date.",
@@ -56,14 +53,16 @@ const checkReservationOrder = (req, res, next) => {
     next();
 };
 const checkTakeoutOrder = (req, res, next) => {
-    const { customer_ID, address, item } = req.body;
+    const { address, item } = req.body;
+    const customer_ID = req.account.customer_id;
     if (!customer_ID || !address || !item) {
         return res.status(400).json({ message: "Missing or invalid data." });
     }
     if (isNaN(customer_ID)) {
         return res.status(400).json({ message: "Invalid customer_ID." });
     }
-    const addressRegex = /^[a-zA-Z0-9\s,'-]+$/;
+    const addressRegex =
+        /^[a-zA-Z0-9\s,'-\u{0041}-\u{007A}\u{00C0}-\u{1EF9}]+$/u;
     if (!addressRegex.test(address)) {
         return res.status(400).json({
             message: "Invalid Address",

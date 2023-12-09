@@ -11,7 +11,6 @@ const Employee = sequelize.define(
         },
         account_ID: {
             type: DataTypes.INTEGER,
-            allowNull: false,
             references: {
                 model: "Account",
                 key: "id",
@@ -45,6 +44,9 @@ const Employee = sequelize.define(
                 model: "Employee",
                 key: "id",
             },
+        },
+        salary: {
+            type: DataTypes.DECIMAL(10, 2),
         },
     },
     {

@@ -7,7 +7,7 @@ const accountRoute = Router();
 accountRoute.post(
     "/login",
     checkLogin,
-    //isAccount,
+    isAccount,
     AccountControllerInstance.login
 );
 accountRoute.post(
