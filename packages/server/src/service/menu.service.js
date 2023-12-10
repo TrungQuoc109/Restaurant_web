@@ -11,19 +11,24 @@ export class MenuService {
         try {
             const menuItem = await Item.findAll({
                 attributes: ["id", "name", "price", "category"],
-                include: {
-                    model: ItemImages,
-                    attributes: ["imageData"],
-                },
                 raw: true,
             });
-            const menuWithImages = menuItem.map((item) => ({
-                ...item,
-                imageData: item.ItemImage
-                    ? item.ItemImage.imageData.toString("base64")
-                    : null,
-            }));
-            return res.status(200).json(menuWithImages);
+            // for (const item of menuItem) {
+            //     const image = await ItemImages.findOne({
+            //         attributes: ["imageData"],
+            //         where: { item_id: item.id },
+            //         raw: true,
+            //     });
+
+            //     if (image) {
+            //         item.image = {
+            //             imageData: image.imageData.toString("base64"),
+            //         };
+            //     } else {
+            //         item.image = null;
+            //     }
+            // }
+            return res.status(200).json(menuItem);
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: "Internal Server Error" });
