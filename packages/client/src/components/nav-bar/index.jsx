@@ -21,7 +21,7 @@ import ShoppingCartModel from "../cart";
 const pageRoutes = {
   "Trang chủ": "/",
   MENU: "/menuPage",
-  "THÔNG TIN NHÀ HÀNG": "/restaurantInfo",
+  "THÔNG TIN NHÀ HÀNG": "/aboutus",
   "ĐẶT BÀN": "/BookingTablePage",
 };
 const settings = [
@@ -112,15 +112,15 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting.label} onClick={handleCloseUserMenu}>
-                  <Typography
-                    textAlign="center"
-                    component={Link}
-                    to={setting.link}
-                    style={{ textDecoration: "none", color: "inherit" }}
-                  >
-                    {setting.label}
-                  </Typography>
+                <MenuItem
+                  key={setting.label}
+                  onClick={handleCloseUserMenu}
+                  component={Link}
+                  to={setting.link}
+                  textAlign="center"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  {setting.label}
                 </MenuItem>
               ))}
             </Menu>

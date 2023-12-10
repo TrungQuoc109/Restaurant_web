@@ -15,9 +15,10 @@ import {
 } from "@mui/material";
 import ResponsiveAppBar from "../../Nav-bar";
 import Footer from "../../footer";
+import { Link } from "react-router-dom";
 
 function Menupage() {
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -31,37 +32,39 @@ function Menupage() {
       id: 1,
       category: "lau",
       name: "LẨU VỊT NẤU CHAO",
+      descriptive: "Description product.",
       price: "348,000₫",
-      image: "public/image/produce/Lẩu/LẨU VỊT NẤU CHAO.jpg",
+      image: "/image/produce/lau/lau_vit_chao.jpg",
     },
     {
       id: 2,
-      name: "BÊ XÀO SẢ ỚT TÁI CHANH HẤP GỪNG",
       category: "nuong",
+      name: "BÊ XÀO SẢ ỚT TÁI CHANH HẤP GỪNG",
+      descriptive: "Description product.",
       price: "198,000₫",
-      image: "public/image/produce/Nướng/BÊ XÀO SẢ ỚT-TÁI CHANH-HẤP GỪNG.jpg",
+      image: "/image/produce/Nướng/BÊ XÀO SẢ ỚT-TÁI CHANH-HẤP GỪNG.jpg",
     },
     {
       id: 3,
-      name: "BÒ LÁ LỐT CUỐN BÁNH HỎI",
       category: "cuon",
+      name: "BÒ LÁ LỐT CUỐN BÁNH HỎI",
+      descriptive: "Description product.",
       price: "148,000₫",
-      image: "/public/image/produce/Cuốn/BÒ LÁ LỐT CUỐN BÁNH HỎI.jpg",
+      image: "/image/produce/Cuốn/BÒ LÁ LỐT CUỐN BÁNH HỎI.jpg",
     },
   ];
-
   const filteredProducts = products.filter((product) => {
-    if (searchQuery && !selectedCategory) {
-      return product.name.toLowerCase().includes(searchQuery.toLowerCase());
-    } else if (selectedCategory && !searchQuery) {
+    if (!searchQuery && selectedCategory === "All") {
+      return true;
+    } else if (!searchQuery && selectedCategory !== "All") {
       return product.category === selectedCategory;
-    } else if (selectedCategory && searchQuery) {
+    } else if (searchQuery && selectedCategory === "All") {
+      return product.name.toLowerCase().includes(searchQuery.toLowerCase());
+    } else {
       return (
         product.category === selectedCategory &&
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
-    } else {
-      return products;
     }
   });
 
@@ -88,7 +91,7 @@ function Menupage() {
                 onChange={handleCategoryChange}
                 label="Category"
               >
-                <MenuItem value="">All</MenuItem>
+                <MenuItem value="All">All</MenuItem>
                 <MenuItem value="lau">LẨU</MenuItem>
                 <MenuItem value="nuong">Nướng</MenuItem>
                 <MenuItem value="cuon">Cuốn</MenuItem>
@@ -101,12 +104,14 @@ function Menupage() {
           {filteredProducts.map((product) => (
             <Grid item xs={12} sm={6} md={4} key={product.id}>
               <Card>
-                <CardMedia
-                  component="img"
-                  height="300"
-                  image={`${product.image}`}
-                  alt={product.name}
-                />
+                <Link to={`/product/${product.id}`}>
+                  <CardMedia
+                    component="img"
+                    height="300"
+                    image={`${product.image}`}
+                    alt={product.name}
+                  />
+                </Link>
                 <CardContent>
                   <Typography variant="h6" component="div">
                     {product.name}

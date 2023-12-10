@@ -29,9 +29,8 @@ const SignUpPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Perform sign-up logic or other necessary actions here
+
     console.log("Form submitted with:", formData);
-    // Example: You might want to perform user registration here
   };
 
   return (
