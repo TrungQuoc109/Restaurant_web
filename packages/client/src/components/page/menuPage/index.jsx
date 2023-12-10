@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+<<<<<<< HEAD
     Grid,
     Card,
     CardContent,
@@ -7,15 +8,41 @@ import {
     Typography,
     Button,
     Container,
+=======
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Button,
+  Container,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+>>>>>>> 8e98cfe5bc2331023d258495e49c3d36c38d221b
 } from "@mui/material";
 import ResponsiveAppBar from "../../Nav-bar";
 import Footer from "../../footer";
 
 function Menupage() {
+<<<<<<< HEAD
     const [selectedCategory, setSelectedCategory] = useState(null);
+=======
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
+>>>>>>> 8e98cfe5bc2331023d258495e49c3d36c38d221b
 
     const [products, setMenu] = useState([]);
 
+<<<<<<< HEAD
     useEffect(() => {
         const fetchMenuItems = async () => {
             try {
@@ -202,6 +229,90 @@ function Menupage() {
             <Footer />
         </div>
     );
+=======
+  const filteredProducts = products.filter((product) => {
+    if (searchQuery && !selectedCategory) {
+      return product.name.toLowerCase().includes(searchQuery.toLowerCase());
+    } else if (selectedCategory && !searchQuery) {
+      return product.category === selectedCategory;
+    } else if (selectedCategory && searchQuery) {
+      return (
+        product.category === selectedCategory &&
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    } else {
+      return products;
+    }
+  });
+
+  return (
+    <Grid>
+      <ResponsiveAppBar />
+      <Container>
+        <Grid container spacing={3} marginTop={1}>
+          <Grid item>
+            <TextField
+              label="Search"
+              variant="outlined"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </Grid>
+          <Grid item sx={{ minWidth: "12rem" }}>
+            <FormControl fullWidth>
+              <InputLabel id="category-select-label">Category</InputLabel>
+              <Select
+                labelId="category-select-label"
+                id="category-select"
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+                label="Category"
+              >
+                <MenuItem value="">All</MenuItem>
+                <MenuItem value="lau">LẨU</MenuItem>
+                <MenuItem value="nuong">Nướng</MenuItem>
+                <MenuItem value="cuon">Cuốn</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={3} marginTop={1}>
+          {filteredProducts.map((product) => (
+            <Grid item xs={12} sm={6} md={4} key={product.id}>
+              <Card>
+                <CardMedia
+                  component="img"
+                  height="300"
+                  image={`${product.image}`}
+                  alt={product.name}
+                />
+                <CardContent>
+                  <Typography variant="h6" component="div">
+                    {product.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Giá: {product.price}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#00470f",
+                      "&:hover": { backgroundColor: "#a80e0e" },
+                    }}
+                  >
+                    Đặt
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+      <Footer />
+    </Grid>
+  );
+>>>>>>> 8e98cfe5bc2331023d258495e49c3d36c38d221b
 }
 
 export default Menupage;

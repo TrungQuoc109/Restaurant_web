@@ -1,41 +1,46 @@
-import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
-import InputBase from "@mui/material/InputBase";
+import React, { useState } from "react";
+import {
+  AppBar,
+  Box,
+  Container,
+  Toolbar,
+  IconButton,
+  Typography,
+  Menu,
+  MenuItem,
+  Avatar,
+  Button,
+  InputBase,
+  Grid,
+} from "@mui/material";
 import { BiSearch } from "react-icons/bi";
-import { Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 import { MdOutlineShoppingCart } from "react-icons/md";
 import ShoppingCartModel from "../cart";
 
-const pages = ["MENU", "THÔNG TIN NHÀ HÀNG", "KHUYẾN MÃI", "ĐẶT BÀN", "TƯ VẤN"];
-const settings = ["Đăng nhập", "Đăng ký"];
+const pageRoutes = {
+  "Trang chủ": "/",
+  MENU: "/menuPage",
+  "THÔNG TIN NHÀ HÀNG": "/restaurantInfo",
+  "ĐẶT BÀN": "/BookingTablePage",
+};
+const settings = [
+  { label: "Đăng nhập", link: "/login" },
+  { label: "Đăng ký", link: "/signup" },
+];
 
 function ResponsiveAppBar() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [openCart, setOpenCart] = React.useState(false);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const [openCart, setOpenCart] = useState(false);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
   const handleOpenCart = () => {
     setOpenCart(true);
   };
@@ -46,85 +51,52 @@ function ResponsiveAppBar() {
 
   return (
     <AppBar position="static" sx={{ backgroundColor: "#746c63" }}>
-      <Container maxWidth="0">
+      <Container maxWidth="lg">
         <Toolbar disableGutters>
-          <Box sx={{ flexGrow: 1, m: "0.5rem" }}>
+          <Box sx={{ flexGrow: 5, m: "0.5rem" }}>
             <IconButton component={Link} to="/">
-              <img src="/public/image/logo.webp" style={{ height: "5rem" }} />
+              <img
+                src="/public/image/logo.webp"
+                style={{ height: "5rem" }}
+                alt="Logo"
+              />
             </IconButton>
           </Box>
 
-          <Box sx={{ flexGrow: 0.5, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
+          <Box sx={{ flexGrow: 5, display: { xs: "none", md: "flex" } }}>
+            {Object.entries(pageRoutes).map(([page, route]) => (
               <Button
                 key={page}
                 component={Link}
-                to={
-                  page === "MENU"
-                    ? "/menuPage"
-                    : page === "ĐẶT BÀN"
-                    ? "/BookingTablePage"
-                    : `/${page.toLowerCase().replace(" ", "-")}`
-                }
-                onClick={handleCloseNavMenu}
+                to={route}
                 sx={{ m: 2, color: "white", display: "block" }}
               >
                 {page}
               </Button>
             ))}
           </Box>
-          <Box sx={{ flexGrow: 0.6, mr: "15rem", ml: "2rem" }}>
-            <Grid
-              container
-              alignItems="center"
-              sx={{
-                border: "1 solid #ccc",
-                borderRadius: "9rem",
-                background: "#fff",
-                padding: "0.3rem",
-              }}
-            >
-              <InputBase
-                sx={{ flex: 1 }}
-                placeholder="Tìm kiếm..."
-                inputProps={{ "": "Tìm kiếm..." }}
-              />
-              <Grid item>
-                <IconButton type="button" aria-label="search">
-                  <BiSearch />
-                </IconButton>
-              </Grid>
-            </Grid>
-          </Box>
 
           <Box sx={{ position: "relative" }}>
-            <Tooltip title="Open settings">
-              <div>
-                <IconButton
-                  onClick={handleOpenCart}
-                  sx={{
-                    backgroundColor: "#bdbdbd",
-                    borderRadius: "50%",
-                    padding: "1rem",
-                    mr: 1,
-                  }}
-                >
-                  <MdOutlineShoppingCart />
-                </IconButton>
-                <IconButton
-                  onClick={handleOpenUserMenu}
-                  sx={{
-                    backgroundColor: "#bdbdbd",
-                    borderRadius: "50%",
-                    padding: "0.5rem",
-                  }}
-                >
-                  <Avatar />
-                </IconButton>
-              </div>
-            </Tooltip>
-
+            <IconButton
+              onClick={handleOpenCart}
+              sx={{
+                backgroundColor: "#bdbdbd",
+                borderRadius: "50%",
+                padding: "1rem",
+                mr: 1,
+                fontSize: "1rem",
+              }}
+            >
+              <MdOutlineShoppingCart fontSize="large" />
+            </IconButton>
+            <IconButton
+              onClick={handleOpenUserMenu}
+              sx={{ p: 0, width: "3rem", height: "3rem" }}
+            >
+              <Avatar alt="Remy Sharp" sx={{ width: "100%", height: "100%" }} />
+            </IconButton>
             <Menu
+              sx={{ mt: "45px" }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -140,20 +112,27 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                <MenuItem key={setting.label} onClick={handleCloseUserMenu}>
+                  <Typography
+                    textAlign="center"
+                    component={Link}
+                    to={setting.link}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    {setting.label}
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
         </Toolbar>
       </Container>
+
       <Box sx={{ position: "relative" }}>
-        {/* Updated IconButton to trigger the opening of the cart model */}
         <ShoppingCartModel open={openCart} handleClose={handleCloseCart} />
-        {/* Pass open state and close function to ShoppingCartModel */}
       </Box>
     </AppBar>
   );
 }
+
 export default ResponsiveAppBar;
