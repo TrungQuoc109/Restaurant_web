@@ -22,6 +22,7 @@ const SignUpPage = () => {
     const [token, setToken] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
 
+<<<<<<< HEAD
     const saveTokenToLocalStorage = (token) => {
         localStorage.setItem("jwtToken", token);
     };
@@ -32,6 +33,13 @@ const SignUpPage = () => {
             [name]: value,
         });
     };
+=======
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    console.log("Form submitted with:", formData);
+  };
+>>>>>>> aca4bd80c2f7916a63919f5e6e0f0849a8876ed7
 
     const handleSubmit = async (e) => {
         e.preventDefault();
