@@ -15,8 +15,6 @@ import {
 } from "@mui/material";
 import { BiSearch } from "react-icons/bi";
 import { Link } from "react-router-dom";
-import { MdOutlineShoppingCart } from "react-icons/md";
-import ShoppingCartModel from "../cart";
 
 const pageRoutes = {
   "Trang chủ": "/",
@@ -31,7 +29,6 @@ const settings = [
 
 function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const [openCart, setOpenCart] = useState(false);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -41,19 +38,11 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
-  const handleOpenCart = () => {
-    setOpenCart(true);
-  };
-
-  const handleCloseCart = () => {
-    setOpenCart(false);
-  };
-
   return (
     <AppBar position="static" sx={{ backgroundColor: "#746c63" }}>
       <Container maxWidth="lg">
         <Toolbar disableGutters>
-          <Box sx={{ flexGrow: 5, m: "0.5rem" }}>
+          <Box sx={{ flexGrow: 4, m: "0.5rem", ml: -1 }}>
             <IconButton component={Link} to="/">
               <img
                 src="/public/image/logo.webp"
@@ -77,18 +66,6 @@ function ResponsiveAppBar() {
           </Box>
 
           <Box sx={{ position: "relative" }}>
-            <IconButton
-              onClick={handleOpenCart}
-              sx={{
-                backgroundColor: "#bdbdbd",
-                borderRadius: "50%",
-                padding: "1rem",
-                mr: 1,
-                fontSize: "1rem",
-              }}
-            >
-              <MdOutlineShoppingCart fontSize="large" />
-            </IconButton>
             <IconButton
               onClick={handleOpenUserMenu}
               sx={{ p: 0, width: "3rem", height: "3rem" }}
@@ -127,10 +104,6 @@ function ResponsiveAppBar() {
           </Box>
         </Toolbar>
       </Container>
-
-      <Box sx={{ position: "relative" }}>
-        <ShoppingCartModel open={openCart} handleClose={handleCloseCart} />
-      </Box>
     </AppBar>
   );
 }
