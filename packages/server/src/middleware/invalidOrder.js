@@ -54,7 +54,7 @@ const checkReservationOrder = (req, res, next) => {
 };
 const checkTakeoutOrder = (req, res, next) => {
     const { address, item } = req.body;
-    const customer_ID = req.account.customer_id;
+    const customer_ID = req.account.user_id;
     if (!customer_ID || !address || !item) {
         return res.status(400).json({ message: "Missing or invalid data." });
     }

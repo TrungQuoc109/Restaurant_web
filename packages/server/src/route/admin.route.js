@@ -47,7 +47,7 @@ adminRoute.post(
     isInfoEmployee,
     managerControllerInstance.addEmployee
 );
-adminRoute.post(
+adminRoute.put(
     "/updateEmployee/:id",
     checkAuth,
     checkAdmin,

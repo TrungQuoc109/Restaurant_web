@@ -58,7 +58,7 @@ export class accountService {
                 res.status(401).json({ message: "Login failed" });
             }
         } catch (error) {
-            console.error("Error during login:", error);
+            //    console.error("Error during login:", error);
             res.status(500).json({ message: "Internal Server Error" });
         }
     }
@@ -103,7 +103,7 @@ export class accountService {
             );
             res.status(200).json({ token });
         } catch (error) {
-            console.error("Error during registration:", error);
+            // console.error("Error during registration:", error);
             res.status(500).json({ message: "Internal Server Error" });
         }
     }

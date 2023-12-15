@@ -14,6 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(urlencoded({ extended: true }));
 app.use(express.json());
 route(app);
