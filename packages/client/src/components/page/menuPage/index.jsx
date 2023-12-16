@@ -1,20 +1,27 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-    Grid,
-    Card,
-    CardContent,
-    CardMedia,
-    Typography,
-    Button,
-    Container,
-    TextField,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Button,
+  Container,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  IconButton,
 } from "@mui/material";
 import ResponsiveAppBar from "../../Nav-bar";
 import Footer from "../../footer";
+import { MdOutlineShoppingCart } from "react-icons/md";
 import { Link } from "react-router-dom";
 
 function Menupage() {
@@ -154,6 +161,96 @@ function Menupage() {
             <Footer />
         </div>
     );
+        <Grid container spacing={3} marginTop={1}>
+          {filteredProducts.map((product) => (
+            <Grid item xs={12} sm={6} md={4} key={product.id}>
+              <Card>
+                <Link to={`/product/${product.id}`}>
+                  <CardMedia
+                    component="img"
+                    height="300"
+                    image={`${product.image}`}
+                    alt={product.name}
+                  />
+                </Link>
+                <CardContent>
+                  <Typography variant="h6" component="div">
+                    {product.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Giá: {product.price}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#00470f",
+                      "&:hover": { backgroundColor: "#a80e0e" },
+                    }}
+                    onClick={() => handleAddToCart(product)}
+                  >
+                    Đặt
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+        <IconButton
+          onClick={handleDrawerOpen}
+          sx={{
+            position: "fixed",
+            bottom: 20,
+            right: 20,
+            zIndex: 999,
+            backgroundColor: "#bdbdbd",
+            borderRadius: "50%",
+            padding: "1rem",
+            mr: 1,
+            fontSize: "2rem",
+          }}
+        >
+          <MdOutlineShoppingCart />
+        </IconButton>
+        <Drawer anchor="right" open={isCartOpen} onClose={handleDrawerClose}>
+          <List sx={{ width: 400 }}>
+            <ListItem>
+              <ListItemText primary="Giỏ hàng" />
+            </ListItem>
+            <Divider />
+            {cartItems.map((item, index) => (
+              <ListItem key={index}>
+                <Grid container spacing={1}>
+                  <Grid item xs={8}>
+                    <Typography variant="subtitle1">
+                      Tên: {item.name}
+                    </Typography>
+                    <Typography variant="body2">Giá: {item.price}</Typography>
+                    <Typography variant="body2">
+                      Số lượng: {item.quantity}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleRemoveItem(index)}
+                    >
+                      Xóa
+                    </Button>
+                  </Grid>
+                </Grid>
+              </ListItem>
+            ))}
+            <Divider />
+            <ListItem>
+              <ListItemText primary={`Tổng: ${totalPrice}`} />
+            </ListItem>
+          </List>
+        </Drawer>
+      </Container>
+      <Footer />
+    </Grid>
+  );
 }
 
 export default Menupage;
