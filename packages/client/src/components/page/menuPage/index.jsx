@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Grid,
   Card,
@@ -19,6 +19,7 @@ import {
   Divider,
   IconButton,
   CircularProgress,
+  Box,
 } from "@mui/material";
 import ResponsiveAppBar from "../../Nav-bar";
 import Footer from "../../footer";
@@ -27,6 +28,7 @@ import { useMenuContext } from "../../../context/MenuContextProvider";
 import { MdOutlineShoppingCart } from "react-icons/md";
 
 function Menupage() {
+  const [currentPage, setCurrentPage] = useState(1);
   const {
     products,
     selectedCategory,
@@ -37,6 +39,7 @@ function Menupage() {
     isCartOpen,
     cartItems,
     totalPrice,
+    handleUserCheckout,
     handleDrawerOpen,
     handleDrawerClose,
     handleRemoveItem,
@@ -59,10 +62,24 @@ function Menupage() {
       );
     }
   });
+
+  const productsPerPage = 9;
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+  const pages = Array.from({
+    length: Math.ceil(filteredProducts.length / productsPerPage),
+  });
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   const linkStyle = {
     textDecoration: "none",
     ml: 2,
   };
+
   return (
     <Grid>
       <ResponsiveAppBar />
@@ -100,7 +117,7 @@ function Menupage() {
           </Grid>
         ) : (
           <Grid container spacing={3} marginTop={1}>
-            {filteredProducts.map((product) => (
+            {currentProducts.map((product) => (
               <Grid item xs={12} sm={6} md={4} key={product.id}>
                 <Link to={`/product/${product.id}`} style={linkStyle}>
                   <Card>
@@ -143,9 +160,23 @@ function Menupage() {
       >
         <MdOutlineShoppingCart />
       </IconButton>
+      <Grid container justifyContent="center" marginTop={2}>
+        {Array.from({
+          length: Math.ceil(products.length / productsPerPage),
+        }).map((_, index) => (
+          <Button
+            key={index}
+            onClick={() => paginate(index + 1)}
+            variant={currentPage === index + 1 ? "contained" : "outlined"}
+            sx={{ margin: "0.2rem" }}
+          >
+            {index + 1}
+          </Button>
+        ))}
+      </Grid>
 
       <Drawer anchor="right" open={isCartOpen} onClose={handleDrawerClose}>
-        <List sx={{ width: 400 }}>
+        <List sx={{ width: 440 }}>
           <ListItem>
             <ListItemText primary="Giỏ hàng" />
           </ListItem>
@@ -153,6 +184,16 @@ function Menupage() {
           {cartItems.map((product, index) => (
             <ListItem key={index}>
               <Grid container spacing={1}>
+                <Grid item xs={4}>
+                  {product.image && product.image.imageData && (
+                    <CardMedia
+                      component="img"
+                      height="100"
+                      src={`data:image/png;base64, ${product.image.imageData}`}
+                      alt={product.name}
+                    />
+                  )}
+                </Grid>
                 <Grid item xs={8}>
                   <Typography variant="subtitle1">
                     Tên: {product.name}
@@ -220,36 +261,58 @@ function Menupage() {
                     Xóa
                   </Button>
                 </Grid>
+                <Grid item xs={12}>
+                  <br />
+                  <Divider />
+                </Grid>
               </Grid>
             </ListItem>
           ))}
-          <Divider />
+        </List>
+        <Box
+          sx={{
+            position: "sticky",
+            bottom: 0,
+            left: 0,
+            width: "88.11%",
+            bgcolor: "background.paper",
+            py: 2,
+            px: 3,
+            zIndex: 999,
+          }}
+        >
           <ListItem>
             <ListItemText primary={`Tổng: ${totalPrice}`} />
           </ListItem>
-        </List>
-        <Container>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={() => {
-              // Handle functionality for 'Check out' button
-            }}
-          >
-            Check out
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={() => {
-              // Handle functionality for 'Xác nhận đặt bàn' button
-            }}
-          >
-            Xác nhận đặt bàn
-          </Button>
-        </Container>
+          <Grid container spacing={2} justifyContent="center">
+            <Grid item xs={12} md={6}>
+              <Button
+                onClick={handleUserCheckout}
+                variant="contained"
+                color="primary"
+                sx={{
+                  backgroundColor: "#00470f",
+                  "&:hover": { backgroundColor: "#a80e0e" },
+                }}
+                fullWidth
+              >
+                Checkout
+              </Button>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={() => {
+                  // Xử lý cho nút 'Xác nhận đặt bàn'
+                }}
+              >
+                Đặt bàn
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
       </Drawer>
       <Footer />
     </Grid>

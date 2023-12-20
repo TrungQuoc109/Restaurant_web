@@ -11,6 +11,7 @@ import {
   Avatar,
   Button,
 } from "@mui/material";
+import { useMenuContext } from "../../context/MenuContextProvider";
 import { Link } from "react-router-dom";
 
 const pageRoutes = {
@@ -25,14 +26,7 @@ const settings = [
 ];
 
 function ResponsiveAppBar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("jwtToken");
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
+  const { isLoggedIn, handleLogout } = useMenuContext();
 
   const [anchorElUser, setAnchorElUser] = useState(null);
 
@@ -42,11 +36,6 @@ function ResponsiveAppBar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("jwtToken");
-    setIsLoggedIn(false);
   };
 
   return (
@@ -111,7 +100,7 @@ function ResponsiveAppBar() {
                   <MenuItem
                     onClick={handleCloseUserMenu}
                     component={Link}
-                    to="/user-information"
+                    to="/userpage"
                     textAlign="center"
                     style={{ textDecoration: "none", color: "inherit" }}
                   >

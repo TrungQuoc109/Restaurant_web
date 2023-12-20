@@ -13,6 +13,27 @@ export const MenuContextProvider = ({ children }) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("jwtToken");
+    setIsLoggedIn(false);
+  };
+
+  const handleUserCheckout = () => {
+    if (isLoggedIn) {
+      window.location.href = "/checkout";
+    } else {
+      window.location.href = "/login";
+    }
+  };
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -74,7 +95,6 @@ export const MenuContextProvider = ({ children }) => {
 
     localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
   };
-
   const handleAddToCart = (product) => {
     const existingItemIndex = cartItems.findIndex(
       (item) => item.id === product.id
@@ -85,10 +105,7 @@ export const MenuContextProvider = ({ children }) => {
       updatedCartItems[existingItemIndex].quantity += 1;
       setCartItems(updatedCartItems);
 
-      const newTotalPrice = updatedCartItems.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      );
+      const newTotalPrice = calculateTotalPrice(updatedCartItems);
       setTotalPrice(newTotalPrice);
     } else {
       const newItem = {
@@ -96,16 +113,19 @@ export const MenuContextProvider = ({ children }) => {
         name: product.name,
         price: product.price,
         quantity: 1,
+        image: product.image,
       };
       setCartItems([...cartItems, newItem]);
 
-      const newTotalPrice = [...cartItems, newItem].reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      );
+      const newTotalPrice = calculateTotalPrice([...cartItems, newItem]);
       setTotalPrice(newTotalPrice);
     }
   };
+
+  const calculateTotalPrice = (items) => {
+    return items.reduce((total, item) => total + item.price * item.quantity, 0);
+  };
+
   useEffect(() => {
     window.localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
@@ -156,7 +176,6 @@ export const MenuContextProvider = ({ children }) => {
 
     fetchMenuItems();
   }, []);
-
   const contextValue = {
     products,
     product,
@@ -166,6 +185,10 @@ export const MenuContextProvider = ({ children }) => {
     isCartOpen,
     totalPrice,
     loading,
+    isLoggedIn,
+    setIsLoggedIn,
+    handleLogout,
+    handleUserCheckout,
     handleDecreaseQuantity,
     handleIncreaseQuantity,
     handleUpdateQuantity,
