@@ -12,7 +12,7 @@ import {
   ListItem,
   ListItemText,
   Divider,
-  IconButton,
+  IconButton,TextField
 } from "@mui/material";
 import ResponsiveAppBar from "../../Nav-bar";
 import Footer from "../../footer";
@@ -33,6 +33,7 @@ function ProductDetailPage() {
     handleDrawerClose,
     handleRemoveItem,
   } = useMenuContext();
+
   useEffect(() => {
     const fetchItemDetail = async () => {
       try {
@@ -56,33 +57,11 @@ function ProductDetailPage() {
     return <Typography variant="h4">Loading...</Typography>;
   }
 
-  // const handleAddToCart = () => {
-  //   const existingItemIndex = cartItems.findIndex(
-  //     (cartItem) => cartItem.id === product.id
-  //   );
-
-  //   if (existingItemIndex !== -1) {
-  //     const updatedCartItems = [...cartItems];
-  //     updatedCartItems[existingItemIndex].quantity += 1;
-  //     setCartItems(updatedCartItems);
-  //   } else {
-  //     setCartItems([...cartItems, { ...product, quantity: 1 }]);
-  //   }
-  // };
-
-  // const handleRemoveItem = (index) => {
-  //   const updatedCartItems = [...cartItems];
-  //   updatedCartItems.splice(index, 1);
-  //   setCartItems(updatedCartItems);
-  // };
-
-  // const handleDrawerOpen = () => {
-  //   setIsCartOpen(true);
-  // };
-
-  // const handleDrawerClose = () => {
-  //   setIsCartOpen(false);
-  // };
+  const handleUpdateQuantity = (updatedProduct) => {
+    const updatedCartItems = cartItems.map((item) =>
+      item.id === updatedProduct.id ? updatedProduct : item
+    );
+  };
 
   const linkStyle = {
     textDecoration: "none",
@@ -99,25 +78,30 @@ function ProductDetailPage() {
       >
         <Grid item xs={12} sm={6} style={{ maxWidth: "600px" }}>
           <Card>
-            <CardMedia
-              component="img"
-              height="auto"
-              image={product.image}
-              alt={product.name}
-            />
+            {product && product.image && (
+              <CardMedia
+                component="img"
+                height="auto"
+                src={`data:image/png;base64, ${product.image.imageData}`}
+                alt={product.name}
+              />
+            )}
           </Card>
         </Grid>
         <Grid item xs={12} sm={6}>
           <Card>
             <CardContent>
               <Typography variant="h4" gutterBottom>
-                {product.name}
+                {product && product.name}
+              </Typography>
+              <Typography variant="h6" gutterBottom>
+                {product && product.description}
               </Typography>
               <Typography variant="h6" color="textSecondary" gutterBottom>
-                Category: {product.category}
+                Category: {product && product.category}
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Price: {product.price}
+                Price: {product && product.price}
               </Typography>
               <Grid
                 container
@@ -143,7 +127,7 @@ function ProductDetailPage() {
                       "&:hover": { backgroundColor: "#a80e0e" },
                     }}
                   >
-                    Go Back
+                    Trở lại
                   </Button>
                 </Link>
               </Grid>
@@ -151,6 +135,7 @@ function ProductDetailPage() {
           </Card>
         </Grid>
       </Grid>
+
       <IconButton
         onClick={handleDrawerOpen}
         sx={{
@@ -183,7 +168,20 @@ function ProductDetailPage() {
                   </Typography>
                   <Typography variant="body2">Giá: {product.price}</Typography>
                   <Typography variant="body2">
-                    Số lượng: {product.quantity}
+                    Số lượng:{" "}
+                    <TextField
+                      type="number"
+                      value={product.quantity}
+                      onChange={(e) => {
+                        const newQuantity = parseInt(e.target.value);
+                        const updatedProduct = {
+                          ...product,
+                          quantity: newQuantity,
+                        };
+                        handleUpdateQuantity(updatedProduct);
+                      }}
+                      inputProps={{ min: 0 }}
+                    />
                   </Typography>
                 </Grid>
                 <Grid item xs={4}>
@@ -204,7 +202,6 @@ function ProductDetailPage() {
           </ListItem>
         </List>
       </Drawer>
-
       <Footer />
     </Grid>
   );

@@ -392,9 +392,7 @@ function BookingTablePage() {
         )}
         {selectedTab === 1 && (
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
-              ty
-            </Grid>
+            <Grid item xs={12} sm={6}></Grid>
           </Grid>
         )}
       </Container>
