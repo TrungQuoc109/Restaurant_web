@@ -8,7 +8,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import path from "path";
 dotenv.config();
-const PORT = process.env.PORT ?? 5999;
+const PORT = process.env.PORT ?? 8080;
 
 const app = express();
 app.use(cors());
@@ -20,7 +20,7 @@ app.use(express.json());
 route(app);
 
 app.listen(PORT, () => {
-    console.log(
-        `⚡️[Restaurant_web]: Server is running at http://localhost:${PORT}`
-    );
+  console.log(
+    `⚡️[Restaurant_web]: Server is running at http://localhost:${PORT}`
+  );
 });

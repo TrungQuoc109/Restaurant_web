@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
 import {
-
   Grid,
   Card,
   CardContent,
@@ -18,140 +17,76 @@ import {
 import ResponsiveAppBar from "../../Nav-bar";
 import Footer from "../../footer";
 import { MdOutlineShoppingCart } from "react-icons/md";
+import { useMenuContext } from "../../../context/MenuContextProvider";
 
 function ProductDetailPage() {
-    const { id } = useParams();
-    const [item, setItem] = useState(null);
-    useEffect(() => {
-        const fetchItemDetail = async () => {
-            try {
-                const response = await fetch(
-                    `http://localhost:8080/menu/${id}`
-                );
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const itemData = await response.json();
-                setItem(itemData);
-            } catch (error) {
-                console.error("Error fetching item detail:", error);
-            }
-        };
+  const { id } = useParams();
+  const [product, setProduct] = useState(null);
 
+  const {
+    cartItems,
+    isCartOpen,
+    totalPrice,
+    loading,
+    handleAddToCart,
+    handleDrawerOpen,
+    handleDrawerClose,
+    handleRemoveItem,
+  } = useMenuContext();
+  useEffect(() => {
+    const fetchItemDetail = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/menu/${id}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const itemData = await response.json();
+        setProduct(itemData);
+      } catch (error) {
+        console.error("Error fetching item detail:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        fetchItemDetail();
-    }, [id]);
-    return (
-        <Grid>
-            <ResponsiveAppBar />
-            <Grid
-                container
-                justifyContent="space-around"
-                sx={{ height: "40rem", paddingInline: "20rem", mt: "2rem" }}
-            >
-                <Grid item xs={12} sm={6} style={{ maxWidth: "600px" }}>
-                    <Card>
-                        {item && item.image && (
-                            <CardMedia
-                                component="img"
-                                height="auto"
-                                src={`data:image/png;base64, ${item.image.imageData}`}
-                                alt={item.name}
-                            />
-                        )}
-                    </Card>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h4" gutterBottom>
-                                {item && item.name}
-                            </Typography>
-                            <Typography variant="h6" gutterBottom>
-                                {item && item.description}
-                            </Typography>
-                            <Typography
-                                variant="h6"
-                                color="textSecondary"
-                                gutterBottom
-                            >
-                                Category: {item && item.category}
-                            </Typography>
-                            <Typography variant="body1" gutterBottom>
-                                Price: {item && item.price}
-                            </Typography>
-                            <Button
-                                variant="contained"
-                                sx={{
-                                    mt: "1rem",
-                                    backgroundColor: "#00470f",
-                                    "&:hover": { backgroundColor: "#a80e0e" },
-                                }}
-                            >
-                                Đặt
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
-            <Footer />
-        </Grid>
-    );
-}
-  const [cartItems, setCartItems] = useState(() => {
-    const storedCartItems = window.localStorage.getItem("cartItems");
-    return storedCartItems ? JSON.parse(storedCartItems) : [];
-  });
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [totalPrice, setTotalPrice] = useState(0);
+    fetchItemDetail();
+  }, [id]);
 
-  if (!product) {
-    return <Typography variant="h4">Product not found</Typography>;
+  if (loading) {
+    return <Typography variant="h4">Loading...</Typography>;
   }
-  const handleAddToCart = (product) => {
-    const existingItemIndex = cartItems.findIndex(
-      (item) => item.id === product.id
-    );
 
-    if (existingItemIndex !== -1) {
-      const updatedCart = cartItems.map((item, index) =>
-        index === existingItemIndex
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      );
-      setCartItems(updatedCart);
-    } else {
-      setCartItems([...cartItems, { ...product, quantity: 1 }]);
-    }
-  };
+  // const handleAddToCart = () => {
+  //   const existingItemIndex = cartItems.findIndex(
+  //     (cartItem) => cartItem.id === product.id
+  //   );
 
-  const handleRemoveItem = (index) => {
-    const updatedCart = [...cartItems];
-    updatedCart.splice(index, 1);
-    setCartItems(updatedCart);
-  };
-  useEffect(() => {
-    window.localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
+  //   if (existingItemIndex !== -1) {
+  //     const updatedCartItems = [...cartItems];
+  //     updatedCartItems[existingItemIndex].quantity += 1;
+  //     setCartItems(updatedCartItems);
+  //   } else {
+  //     setCartItems([...cartItems, { ...product, quantity: 1 }]);
+  //   }
+  // };
 
-  useEffect(() => {
-    const storedCartItems = window.localStorage.getItem("cartItems");
-    setCartItems(storedCartItems ? JSON.parse(storedCartItems) : []);
-  }, []);
+  // const handleRemoveItem = (index) => {
+  //   const updatedCartItems = [...cartItems];
+  //   updatedCartItems.splice(index, 1);
+  //   setCartItems(updatedCartItems);
+  // };
 
-  useEffect(() => {
-    let total = 0;
-    cartItems.forEach((item) => {
-      total += parseFloat(item.price) * item.quantity;
-    });
-    setTotalPrice(total.toFixed(3));
-  }, [cartItems]);
+  // const handleDrawerOpen = () => {
+  //   setIsCartOpen(true);
+  // };
 
-  const handleDrawerOpen = () => {
-    setIsCartOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setIsCartOpen(false);
+  // const handleDrawerClose = () => {
+  //   setIsCartOpen(false);
+  // };
+
+  const linkStyle = {
+    textDecoration: "none",
+    ml: 2,
   };
 
   return (
@@ -184,23 +119,38 @@ function ProductDetailPage() {
               <Typography variant="body1" gutterBottom>
                 Price: {product.price}
               </Typography>
-              <Button
-                onClick={() => handleAddToCart(product)}
-                variant="contained"
-                sx={{
-                  mt: "1rem",
-                  backgroundColor: "#00470f",
-                  "&:hover": { backgroundColor: "#a80e0e" },
-                }}
+              <Grid
+                container
+                justifyContent="space-between"
+                alignItems="center"
+                mt={2}
               >
-                Đặt
-              </Button>
+                <Button
+                  onClick={() => handleAddToCart(product)}
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#00470f",
+                    "&:hover": { backgroundColor: "#a80e0e" },
+                  }}
+                >
+                  Đặt
+                </Button>
+                <Link to="/menuPage" style={linkStyle}>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#00470f",
+                      "&:hover": { backgroundColor: "#a80e0e" },
+                    }}
+                  >
+                    Go Back
+                  </Button>
+                </Link>
+              </Grid>
             </CardContent>
           </Card>
         </Grid>
       </Grid>
-
-      {/* Floating Cart Button */}
       <IconButton
         onClick={handleDrawerOpen}
         sx={{
@@ -218,21 +168,22 @@ function ProductDetailPage() {
         <MdOutlineShoppingCart />
       </IconButton>
 
-      {/* Cart Drawer */}
       <Drawer anchor="right" open={isCartOpen} onClose={handleDrawerClose}>
         <List sx={{ width: 400 }}>
           <ListItem>
             <ListItemText primary="Giỏ hàng" />
           </ListItem>
           <Divider />
-          {cartItems.map((item, index) => (
+          {cartItems.map((product, index) => (
             <ListItem key={index}>
               <Grid container spacing={1}>
                 <Grid item xs={8}>
-                  <Typography variant="subtitle1">Tên: {item.name}</Typography>
-                  <Typography variant="body2">Giá: {item.price}</Typography>
+                  <Typography variant="subtitle1">
+                    Tên: {product.name}
+                  </Typography>
+                  <Typography variant="body2">Giá: {product.price}</Typography>
                   <Typography variant="body2">
-                    Số lượng: {item.quantity}
+                    Số lượng: {product.quantity}
                   </Typography>
                 </Grid>
                 <Grid item xs={4}>
@@ -257,6 +208,5 @@ function ProductDetailPage() {
       <Footer />
     </Grid>
   );
-};
-
+}
 export default ProductDetailPage;

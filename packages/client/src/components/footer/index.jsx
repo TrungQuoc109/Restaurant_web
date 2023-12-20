@@ -10,7 +10,7 @@ const footerStyle = {
   right: 0,
   backgroundColor: "#f0f0f0",
   padding: "1rem",
-  mt: 1,
+  mt: "20.9rem",
 };
 export const linkStyle = {
   textDecoration: "none",
@@ -25,7 +25,7 @@ export const footerImageStyle = {
 
 function Footer() {
   return (
-    <Box sx={footerStyle}>
+    <Box sx={footerStyle} component="footer">
       <Container>
         <Grid container>
           <Grid item md={8}>

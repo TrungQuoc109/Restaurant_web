@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Grid,
   Card,
@@ -18,183 +18,120 @@ import {
   ListItemText,
   Divider,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import ResponsiveAppBar from "../../Nav-bar";
 import Footer from "../../footer";
-import { MdOutlineShoppingCart } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { useMenuContext } from "../../../context/MenuContextProvider";
+import { MdOutlineShoppingCart } from "react-icons/md";
 
 function Menupage() {
-    const [products, setMenu] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState("All");
-    const [searchQuery, setSearchQuery] = useState("");
-    const handleSearchChange = (event) => {
-        setSearchQuery(event.target.value);
-    };
-    const handleCategoryChange = (event) => {
-        setSelectedCategory(event.target.value);
-    };
+  const {
+    products,
+    selectedCategory,
+    searchQuery,
+    handleSearchChange,
+    handleCategoryChange,
+    loading,
+    isCartOpen,
+    cartItems,
+    totalPrice,
+    handleDrawerOpen,
+    handleDrawerClose,
+    handleRemoveItem,
+    handleAddToCart,
+  } = useMenuContext();
 
-    useEffect(() => {
-        const fetchMenuItems = async () => {
-            try {
-                const response = await fetch("http://localhost:8080/menu/");
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const data = await response.json();
-                const menuItems = await Promise.all(
-                    data.map(async (item) => {
-                        const itemResponse = await fetch(
-                            `http://localhost:8080/menu/${item.id}`
-                        );
-                        if (!itemResponse.ok) {
-                            throw new Error(
-                                `HTTP error! Status: ${itemResponse.status}`
-                            );
-                        }
-                        const itemData = await itemResponse.json();
-                        return {
-                            ...item,
-                            image: itemData.image.imageData.toString("base64"),
-                        };
-                    })
-                );
-                setMenu(menuItems);
-            } catch (error) {
-                console.error("Error fetching menu:", error);
-            }
-        };
+  const filteredProducts = products.filter((product) => {
+    if (!searchQuery && selectedCategory === "All") {
+      return true;
+    } else if (!searchQuery && selectedCategory !== "All") {
+      return product.category === selectedCategory;
+    } else if (searchQuery && selectedCategory === "All") {
+      return product.name.toLowerCase().includes(searchQuery.toLowerCase());
+    } else {
+      return (
+        product.category === selectedCategory &&
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+  });
 
-        fetchMenuItems();
-    }, []);
-
-    const filteredProducts = products.filter((product) => {
-        if (!searchQuery && selectedCategory === "All") {
-            return true;
-        } else if (!searchQuery && selectedCategory !== "All") {
-            return product.category === selectedCategory;
-        } else if (searchQuery && selectedCategory === "All") {
-            return product.name
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase());
-        } else {
-            return (
-                product.category === selectedCategory &&
-                product.name.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-        }
-    });
-    return (
-        <div>
-            <ResponsiveAppBar />
-            <Container>
-                <Grid container spacing={3} marginTop={1}>
-                    <Grid item>
-                        <TextField
-                            label="Search"
-                            variant="outlined"
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                        />
-                    </Grid>
-                    <Grid item sx={{ minWidth: "12rem" }}>
-                        <FormControl fullWidth>
-                            <InputLabel id="category-select-label">
-                                Category
-                            </InputLabel>
-                            <Select
-                                labelId="category-select-label"
-                                id="category-select"
-                                value={selectedCategory}
-                                onChange={handleCategoryChange}
-                                label="Category"
-                            >
-                                <MenuItem value="All">All</MenuItem>
-                                <MenuItem value="Lẩu">Lẩu</MenuItem>
-                                <MenuItem value="Nướng">Nướng</MenuItem>
-                                <MenuItem value="Cuốn">Cuốn</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                </Grid>
-                <Grid container spacing={3} marginTop={1}>
-                    {filteredProducts.map((product) => (
-                        <Grid item xs={12} sm={6} md={4} key={product.id}>
-                            <Card>
-                                <Link to={`/product/${product.id}`}>
-                                    <CardMedia
-                                        component="img"
-                                        height="300"
-                                        src={`data:image/png;base64, ${product.image}`}
-                                        alt={product.name}
-                                        loading="lazy"
-                                    />
-                                </Link>
-                                <CardContent>
-                                    <Typography variant="h6" component="div">
-                                        {product.name}
-                                    </Typography>
-                                    <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                    >
-                                        Giá: {product.price}
-                                    </Typography>
-                                    <Button
-                                        variant="contained"
-                                        sx={{
-                                            backgroundColor: "#00470f",
-                                            "&:hover": {
-                                                backgroundColor: "#a80e0e",
-                                            },
-                                        }}
-                                    >
-                                        Đặt
-                                    </Button>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    ))}
-                </Grid>
-            </Container>
-            <Footer />
-        </div>
-    );
+  return (
+    <Grid>
+      <ResponsiveAppBar />
+      <Container>
         <Grid container spacing={3} marginTop={1}>
-          {filteredProducts.map((product) => (
-            <Grid item xs={12} sm={6} md={4} key={product.id}>
-              <Card>
-                <Link to={`/product/${product.id}`}>
-                  <CardMedia
-                    component="img"
-                    height="300"
-                    image={`${product.image}`}
-                    alt={product.name}
-                  />
-                </Link>
-                <CardContent>
-                  <Typography variant="h6" component="div">
-                    {product.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Giá: {product.price}
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      backgroundColor: "#00470f",
-                      "&:hover": { backgroundColor: "#a80e0e" },
-                    }}
-                    onClick={() => handleAddToCart(product)}
-                  >
-                    Đặt
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
+          <Grid item>
+            <TextField
+              label="Search"
+              variant="outlined"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </Grid>
+          <Grid item sx={{ minWidth: "12rem" }}>
+            <FormControl fullWidth>
+              <InputLabel id="category-select-label">Category</InputLabel>
+              <Select
+                labelId="category-select-label"
+                id="category-select"
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+                label="Category"
+              >
+                <MenuItem value="All">All</MenuItem>
+                <MenuItem value="Lẩu">Lẩu</MenuItem>
+                <MenuItem value="Nướng">Nướng</MenuItem>
+                <MenuItem value="Cuốn">Cuốn</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
         </Grid>
+        {loading ? (
+          <Grid container justifyContent="center">
+            <CircularProgress size={60} />
+          </Grid>
+        ) : (
+          <Grid container spacing={3} marginTop={1}>
+            {filteredProducts.map((product) => (
+              <Grid item xs={12} sm={6} md={4} key={product.id}>
+                <Card>
+                  <Link
+                    to={`/product/${product.id}`}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <CardMedia
+                      component="img"
+                      height="300"
+                      image={`${product.image}`}
+                      alt={product.name}
+                    />
+                  </Link>
+                  <CardContent>
+                    <Typography variant="h6" component="div">
+                      {product.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Giá: {product.price} VND
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#00470f",
+                        "&:hover": { backgroundColor: "#a80e0e" },
+                      }}
+                      onClick={() => handleAddToCart(product)}
+                    >
+                      Đặt
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
         <IconButton
           onClick={handleDrawerOpen}
           sx={{
@@ -224,7 +161,9 @@ function Menupage() {
                     <Typography variant="subtitle1">
                       Tên: {item.name}
                     </Typography>
-                    <Typography variant="body2">Giá: {item.price}</Typography>
+                    <Typography variant="body2">
+                      Giá: {item.price}VND
+                    </Typography>
                     <Typography variant="body2">
                       Số lượng: {item.quantity}
                     </Typography>
@@ -243,14 +182,35 @@ function Menupage() {
             ))}
             <Divider />
             <ListItem>
-              <ListItemText primary={`Tổng: ${totalPrice}`} />
+              <ListItemText primary={`Tổng: ${totalPrice} VND`} />
             </ListItem>
           </List>
+          <Container>
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              onClick={() => {
+                // Handle functionality for 'Check out' button
+              }}
+            >
+              Check out
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              onClick={() => {
+                // Handle functionality for 'Xác nhận đặt bàn' button
+              }}
+            >
+              Xác nhận đặt bàn
+            </Button>
+          </Container>
         </Drawer>
       </Container>
       <Footer />
     </Grid>
   );
 }
-
 export default Menupage;
