@@ -28,7 +28,6 @@ function ResponsiveAppBar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Check for JWT token in localStorage on component mount
     const token = localStorage.getItem("jwtToken");
     if (token) {
       setIsLoggedIn(true);
@@ -46,7 +45,6 @@ function ResponsiveAppBar() {
   };
 
   const handleLogout = () => {
-    // Clear token from localStorage and update login status
     localStorage.removeItem("jwtToken");
     setIsLoggedIn(false);
   };
@@ -56,7 +54,6 @@ function ResponsiveAppBar() {
       <Container maxWidth="lg">
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 4, m: "0.5rem", ml: -1 }}>
-            {/* Logo */}
             <IconButton component={Link} to="/">
               <img
                 src="/public/image/logo.webp"
@@ -67,21 +64,26 @@ function ResponsiveAppBar() {
           </Box>
 
           <Box sx={{ flexGrow: 5, display: { xs: "none", md: "flex" } }}>
-            {/* Page Routes */}
-            {Object.entries(pageRoutes).map(([page, route]) => (
-              <Button
-                key={page}
-                component={Link}
-                to={route}
-                sx={{ m: 2, color: "white", display: "block" }}
-              >
-                {page}
-              </Button>
-            ))}
+            {Object.entries(pageRoutes).map(([page, route]) => {
+              let destination = route;
+              if (page === "ĐẶT BÀN") {
+                destination = isLoggedIn ? pageRoutes[page] : "/login";
+              }
+
+              return (
+                <Button
+                  key={page}
+                  component={Link}
+                  to={destination}
+                  sx={{ m: 2, color: "white", display: "block" }}
+                >
+                  {page}
+                </Button>
+              );
+            })}
           </Box>
 
           <Box sx={{ position: "relative" }}>
-            {/* User Menu */}
             <IconButton
               onClick={handleOpenUserMenu}
               sx={{ p: 0, width: "3rem", height: "3rem" }}
@@ -89,7 +91,7 @@ function ResponsiveAppBar() {
               <Avatar alt="User" sx={{ width: "100%", height: "100%" }} />
             </IconButton>
             <Menu
-              sx={{ mt: "45px" }}
+              sx={{ mt: "3rem" }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -104,7 +106,6 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {/* Conditional Rendering based on login status */}
               {isLoggedIn ? (
                 <>
                   <MenuItem
@@ -120,6 +121,7 @@ function ResponsiveAppBar() {
                     onClick={() => {
                       handleLogout();
                       handleCloseUserMenu();
+                      window.location.href = "/login";
                     }}
                     textAlign="center"
                     style={{ textDecoration: "none", color: "inherit" }}

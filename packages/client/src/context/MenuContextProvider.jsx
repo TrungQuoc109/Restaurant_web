@@ -40,6 +40,41 @@ export const MenuContextProvider = ({ children }) => {
     setTotalPrice(newTotalPrice);
   };
 
+  const handleIncreaseQuantity = (index) => {
+    const updatedCartItems = [...cartItems];
+    updatedCartItems[index].quantity += 1;
+
+    setCartItems(updatedCartItems);
+    updateTotalPrice(updatedCartItems);
+    updateLocalStorage(updatedCartItems);
+  };
+
+  const handleDecreaseQuantity = (index) => {
+    const updatedCartItems = [...cartItems];
+    if (updatedCartItems[index].quantity > 1) {
+      updatedCartItems[index].quantity -= 1;
+
+      setCartItems(updatedCartItems);
+      updateTotalPrice(updatedCartItems);
+      updateLocalStorage(updatedCartItems);
+    }
+  };
+
+  const handleUpdateQuantity = (index, newQuantity) => {
+    const updatedCartItems = [...cartItems];
+    updatedCartItems[index].quantity = newQuantity;
+
+    setCartItems(updatedCartItems);
+
+    const newTotalPrice = updatedCartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+    setTotalPrice(newTotalPrice);
+
+    localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+  };
+
   const handleAddToCart = (product) => {
     const existingItemIndex = cartItems.findIndex(
       (item) => item.id === product.id
@@ -71,7 +106,6 @@ export const MenuContextProvider = ({ children }) => {
       setTotalPrice(newTotalPrice);
     }
   };
-
   useEffect(() => {
     window.localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
@@ -132,6 +166,9 @@ export const MenuContextProvider = ({ children }) => {
     isCartOpen,
     totalPrice,
     loading,
+    handleDecreaseQuantity,
+    handleIncreaseQuantity,
+    handleUpdateQuantity,
     handleSearchChange,
     handleCategoryChange,
     handleDrawerOpen,

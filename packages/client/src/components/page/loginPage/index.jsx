@@ -29,7 +29,6 @@ const LoginPage = () => {
   const saveTokenToLocalStorage = (token) => {
     localStorage.setItem("jwtToken", token);
   };
-  //const history = useHistory();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -48,6 +47,7 @@ const LoginPage = () => {
         setToken(mockToken);
         saveTokenToLocalStorage(mockToken);
         setErrorMessage("successful ");
+        window.location.href = "/";
         console.log(1);
       } else {
         const errorData = await response.json();
