@@ -3,7 +3,7 @@ import { orderControllerInstance } from "../controller/index.js";
 import { checkAdmin, checkAuth } from "../middleware/checkAccount.js";
 
 const orderRoute = Router();
-orderRoute.get("/", checkAuth, checkAdmin, orderControllerInstance.getOrder);
+orderRoute.get("/", checkAuth, orderControllerInstance.getOrder);
 orderRoute.get(
     "/:id",
     checkAuth,

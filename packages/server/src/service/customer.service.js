@@ -115,15 +115,12 @@ export class CustomerService {
             const oneHourAfter = moment(appointmentMoment)
                 .add(1, "hour")
                 .format("HH:mm");
-            const formattedDate = moment(
-                req.body.appointment_date,
-                "DD/MM/YYYY"
-            ).format("YYYY-MM-DD");
+
             const totalGuestsWithinOneHour = await Reservation.sum(
                 "number_of_guests",
                 {
                     where: Sequelize.literal(
-                        `\`Reservation\`.\`appointment_date\` = '${formattedDate}' AND TIME(appointment_time) BETWEEN TIME('${oneHourBefore}') AND TIME('${oneHourAfter}')`
+                        `\`Reservation\`.\`appointment_date\` = '${req.body.appointment_date}' AND TIME(appointment_time) BETWEEN TIME('${oneHourBefore}') AND TIME('${oneHourAfter}')`
                     ),
                 }
             );
@@ -141,50 +138,58 @@ export class CustomerService {
             const order = await Reservation.create({
                 customer_ID: cus.id,
                 number_of_guests: req.body.number_of_guests,
-                appointment_date: formattedDate,
+                appointment_date: req.body.appointment_date,
                 appointment_time: req.body.appointment_time,
                 note: req.body.note ?? "",
                 status: 0,
             });
-            const item_list = req.body.item;
 
-            if (
-                !item_list ||
-                !Array.isArray(item_list) ||
-                item_list.length === 0
-            ) {
-                return res
-                    .status(200)
-                    .json({ message: "Reservation successfully created." });
-            }
-
-            const detailsPromises = item_list.map(async (item) => {
-                return ReservationOrderDetail.create({
-                    item_id: item.id,
-                    order_id: order.id,
-                    quantity: item.quantity ?? 1,
-                    note: item.item_note ?? "",
+            if (order) {
+                return res.status(200).json({
+                    message: "Reservation successfully created.",
+                    order: order,
                 });
-            });
+            }
+            //làm thành function riêng
+            // const item_list = req.body.item;
 
-            await Promise.all(detailsPromises);
-            const reservation_Oder = await Reservation.findOne({
-                where: { id: order.id },
-                raw: true,
-            });
-            reservation_Oder.order_date = moment(
-                reservation_Oder.order_date
-            ).format("DD/MM/YYYY HH:mm");
-            reservation_Oder.appointment_date = moment(
-                reservation_Oder.appointment_date
-            ).format("DD/MM/YYYY");
-            reservation_Oder.item_list = await ReservationOrderDetail.findAll({
-                attributes: ["item_id", "quantity", "note", "amount"],
-                where: {
-                    order_id: reservation_Oder.id,
-                },
-            });
-            return res.status(200).json({ reservation_Oder });
+            // if (
+            //     !item_list ||
+            //     !Array.isArray(item_list) ||
+            //     item_list.length === 0
+            // ) {
+            //     return res.status(200).json({
+            //         message: "Reservation successfully created.",
+            //         order: order,
+            //     });
+            // }
+            // const detailsPromises = item_list.map(async (item) => {
+            //     return ReservationOrderDetail.create({
+            //         item_id: item.id,
+            //         order_id: order.id,
+            //         quantity: item.quantity ?? 1,
+            //         note: item.item_note ?? "",
+            //     });
+            // });
+
+            // await Promise.all(detailsPromises);
+            // const reservation_Oder = await Reservation.findOne({
+            //     where: { id: order.id },
+            //     raw: true,
+            // });
+            // reservation_Oder.order_date = moment(
+            //     reservation_Oder.order_date
+            // ).format("DD/MM/YYYY HH:mm");
+            // reservation_Oder.appointment_date = moment(
+            //     reservation_Oder.appointment_date
+            // ).format("DD/MM/YYYY");
+            // reservation_Oder.item_list = await ReservationOrderDetail.findAll({
+            //     attributes: ["item_id", "quantity", "note", "amount"],
+            //     where: {
+            //         order_id: reservation_Oder.id,
+            //     },
+            // });
+            // return res.status(200).json({ reservation_Oder });
         } catch (error) {
             console.log("Error: ", error);
             res.status(500).json({ message: "Internal Server Error" });

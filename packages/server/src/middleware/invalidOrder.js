@@ -1,19 +1,39 @@
 import moment from "moment";
 const checkReservationOrder = (req, res, next) => {
-    const { appointment_date, appointment_time, number_of_guests } = req.body;
-    const customer_ID = req.account.customer_id;
-    if (
-        !appointment_date ||
-        !appointment_time ||
-        !customer_ID ||
-        !number_of_guests
-    )
-        return res.status(400).json({ message: "Missing or invalid data." });
+    const { appointment_date, appointment_time, number_of_guests, note } =
+        req.body;
+    console.log(req.body);
+    const customer_ID = req.account.user_id;
+
+    if (!appointment_date) {
+        return res
+            .status(400)
+            .json({ message: "Missing or invalid appointment_date." });
+    }
+
+    if (!appointment_time) {
+        return res
+            .status(400)
+            .json({ message: "Missing or invalid appointment_time." });
+    }
+
+    if (!customer_ID) {
+        return res
+            .status(400)
+            .json({ message: "Missing or invalid customer_ID." });
+    }
+
+    if (!number_of_guests) {
+        return res
+            .status(400)
+            .json({ message: "Missing or invalid number_of_guests." });
+    }
+
     const currentDate = new Date();
-    const formatDate = moment(appointment_date, "DD/MM/YYYY").format(
-        "YYYY-MM-DD"
+
+    const appointmentDateTime = new Date(
+        `${appointment_date}T${appointment_time}`
     );
-    const appointmentDateTime = new Date(`${formatDate}T${appointment_time}`);
     if (isNaN(appointmentDateTime) || appointmentDateTime < currentDate) {
         return res.status(400).json({
             message: "Invalid appointment date.",
