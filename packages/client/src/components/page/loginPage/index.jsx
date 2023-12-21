@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import ResponsiveAppBar from "../../Nav-bar";
 import Footer from "../../footer";
+import jwt from "jsonwebtoken";
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({
@@ -49,9 +50,9 @@ const LoginPage = () => {
                 const mockToken = data.token;
                 setToken(mockToken);
                 saveTokenToLocalStorage(mockToken);
-                setErrorMessage("successful");
-                window.location.href = "/";
-                console.log(1);
+                const decodedToken = jwt.decode(data.token, { complete: true });
+                const userRoles = decodedToken.payload.role;
+                if (userRoles) window.location.href = "/";
             } else {
                 const errorData = await response.json();
                 setErrorMessage(errorData.message);
