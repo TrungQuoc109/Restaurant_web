@@ -112,7 +112,7 @@ function Menupage() {
                                         <CardMedia
                                             component="img"
                                             height="300"
-                                            image={`${product.image}`}
+                                            image={`data:image/png;base64,${product.image}`}
                                             alt={product.name}
                                         />
 
@@ -146,7 +146,7 @@ function Menupage() {
                                                 Đặt
                                             </Button>
                                         </CardContent>
-                                    </Link>
+                                   
                                 </Card>
                             </Grid>
                         ))}

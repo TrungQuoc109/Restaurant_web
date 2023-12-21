@@ -2,11 +2,10 @@ import moment from "moment";
 const checkReservationOrder = (req, res, next) => {
     const { appointment_date, appointment_time, table_ID, number_of_guests } =
         req.body;
-    //const customer_ID = req.account.customer_id;
+    const customer_ID = req.account.customer_id;
     if (
         !appointment_date ||
         !appointment_time ||
-        !table_ID ||
         !customer_ID ||
         !number_of_guests
     )
@@ -34,9 +33,6 @@ const checkReservationOrder = (req, res, next) => {
         return res.status(400).json({
             message: "Invalid appointment time.",
         });
-    }
-    if (isNaN(table_ID)) {
-        return res.status(400).json({ message: "Invalid table_ID." });
     }
 
     // Check if customer_ID is a valid number

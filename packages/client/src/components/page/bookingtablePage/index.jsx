@@ -239,7 +239,6 @@ function BookingTablePage() {
     "21:30",
   ];
 
-  const tables = Array.from({ length: 10 }, (_, index) => index + 1);
   const todayDate = new Date().toISOString().split("T")[0];
 
   const futureDate = new Date();
@@ -249,10 +248,7 @@ function BookingTablePage() {
   return (
     <Grid>
       <ResponsiveAppBar />
-      <Container maxWidth="lg" sx={{ backgroundColor: "White", mt: "1rem" }}>
-        <Typography variant="h4" sx={{ pt: "1rem" }} gutterBottom>
-          Đặt bàn
-        </Typography>
+      <Container maxWidth="lg" sx={{ backgroundColor: "White", mt: "5rem" }}>
         <Tabs
           value={selectedTab}
           onChange={handleTabChange}
@@ -271,9 +267,7 @@ function BookingTablePage() {
               maxWidth="lg"
               sx={{ backgroundColor: "White", mt: "1rem" }}
             >
-              <Typography variant="h4" sx={{ pt: "1rem" }} gutterBottom>
-                Đặt bàn
-              </Typography>
+              <br />
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
                   <TextField
@@ -298,10 +292,6 @@ function BookingTablePage() {
                     inputProps={{ type: "number" }}
                     sx={{
                       '& input[type="number"]::-webkit-inner-spin-button': {
-                        "-webkit-appearance": "none",
-                        margin: 0,
-                      },
-                      '& input[type="number"]::-webkit-outer-spin-button': {
                         "-webkit-appearance": "none",
                         margin: 0,
                       },
@@ -392,9 +382,7 @@ function BookingTablePage() {
         )}
         {selectedTab === 1 && (
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
-              ty
-            </Grid>
+            <Grid item xs={12} sm={6}></Grid>
           </Grid>
         )}
       </Container>

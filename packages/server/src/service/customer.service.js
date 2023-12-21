@@ -8,6 +8,7 @@ import {
 } from "../model/index.model.js";
 import moment from "moment";
 import bcrypt from "bcrypt";
+import { Op, Sequelize } from "sequelize";
 export class CustomerService {
     static instance;
     static getInstance() {
@@ -98,17 +99,48 @@ export class CustomerService {
     }
     async reservation(req, res) {
         try {
+            const maxsize = 20;
+
             const cus = await Customer.findOne({
                 where: { account_ID: req.account.id },
             });
+
+            const appointmentMoment = moment(
+                req.body.appointment_time,
+                "HH:mm"
+            );
+            const oneHourBefore = moment(appointmentMoment)
+                .subtract(1, "hour")
+                .format("HH:mm");
+            const oneHourAfter = moment(appointmentMoment)
+                .add(1, "hour")
+                .format("HH:mm");
             const formattedDate = moment(
                 req.body.appointment_date,
-                "DD/MM/YYYY "
+                "DD/MM/YYYY"
             ).format("YYYY-MM-DD");
+            const totalGuestsWithinOneHour = await Reservation.sum(
+                "number_of_guests",
+                {
+                    where: Sequelize.literal(
+                        `\`Reservation\`.\`appointment_date\` = '${formattedDate}' AND TIME(appointment_time) BETWEEN TIME('${oneHourBefore}') AND TIME('${oneHourAfter}')`
+                    ),
+                }
+            );
+
+            console.log(totalGuestsWithinOneHour);
+            if (
+                maxsize - totalGuestsWithinOneHour <
+                req.body.number_of_guests
+            ) {
+                return res.status(429).json({
+                    message:
+                        "Exceeded the maximum number of guests within this time range.",
+                });
+            }
 
             const order = await Reservation.create({
                 customer_ID: cus.id,
-                table_ID: req.body.table_ID,
                 number_of_guests: req.body.number_of_guests,
                 appointment_date: formattedDate,
                 appointment_time: req.body.appointment_time,
@@ -123,7 +155,7 @@ export class CustomerService {
                 item_list.length === 0
             ) {
                 return res
-                    .status(400)
+                    .status(200)
                     .json({ message: "Reservation successfully created." });
             }
 

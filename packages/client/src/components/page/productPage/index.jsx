@@ -13,6 +13,7 @@ import {
   ListItemText,
   Divider,
   IconButton,
+  TextField,
 } from "@mui/material";
 import ResponsiveAppBar from "../../Nav-bar";
 import Footer from "../../footer";
@@ -32,6 +33,9 @@ function ProductDetailPage() {
     handleDrawerOpen,
     handleDrawerClose,
     handleRemoveItem,
+    handleUpdateQuantity,
+    handleDecreaseQuantity,
+    handleIncreaseQuantity,
   } = useMenuContext();
   useEffect(() => {
     const fetchItemDetail = async () => {
@@ -45,7 +49,7 @@ function ProductDetailPage() {
       } catch (error) {
         console.error("Error fetching item detail:", error);
       } finally {
-        setLoading(false);
+        loading(false);
       }
     };
 
@@ -55,34 +59,6 @@ function ProductDetailPage() {
   if (loading) {
     return <Typography variant="h4">Loading...</Typography>;
   }
-
-  // const handleAddToCart = () => {
-  //   const existingItemIndex = cartItems.findIndex(
-  //     (cartItem) => cartItem.id === product.id
-  //   );
-
-  //   if (existingItemIndex !== -1) {
-  //     const updatedCartItems = [...cartItems];
-  //     updatedCartItems[existingItemIndex].quantity += 1;
-  //     setCartItems(updatedCartItems);
-  //   } else {
-  //     setCartItems([...cartItems, { ...product, quantity: 1 }]);
-  //   }
-  // };
-
-  // const handleRemoveItem = (index) => {
-  //   const updatedCartItems = [...cartItems];
-  //   updatedCartItems.splice(index, 1);
-  //   setCartItems(updatedCartItems);
-  // };
-
-  // const handleDrawerOpen = () => {
-  //   setIsCartOpen(true);
-  // };
-
-  // const handleDrawerClose = () => {
-  //   setIsCartOpen(false);
-  // };
 
   const linkStyle = {
     textDecoration: "none",
@@ -99,25 +75,30 @@ function ProductDetailPage() {
       >
         <Grid item xs={12} sm={6} style={{ maxWidth: "600px" }}>
           <Card>
-            <CardMedia
-              component="img"
-              height="auto"
-              image={product.image}
-              alt={product.name}
-            />
+            {product && product.image && (
+              <CardMedia
+                component="img"
+                height="auto"
+                src={`data:image/png;base64, ${product.image.imageData}`}
+                alt={product.name}
+              />
+            )}
           </Card>
         </Grid>
         <Grid item xs={12} sm={6}>
           <Card>
             <CardContent>
               <Typography variant="h4" gutterBottom>
-                {product.name}
+                {product && product.name}
+              </Typography>
+              <Typography variant="h6" gutterBottom>
+                Mô tả: {product && product.description}
               </Typography>
               <Typography variant="h6" color="textSecondary" gutterBottom>
-                Category: {product.category}
+                Loại: {product && product.category}
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Price: {product.price}
+                Giá: {product && product.price}
               </Typography>
               <Grid
                 container
@@ -143,7 +124,7 @@ function ProductDetailPage() {
                       "&:hover": { backgroundColor: "#a80e0e" },
                     }}
                   >
-                    Go Back
+                    Trở lại
                   </Button>
                 </Link>
               </Grid>
@@ -151,6 +132,7 @@ function ProductDetailPage() {
           </Card>
         </Grid>
       </Grid>
+
       <IconButton
         onClick={handleDrawerOpen}
         sx={{
@@ -181,12 +163,62 @@ function ProductDetailPage() {
                   <Typography variant="subtitle1">
                     Tên: {product.name}
                   </Typography>
+                  <br />
                   <Typography variant="body2">Giá: {product.price}</Typography>
-                  <Typography variant="body2">
-                    Số lượng: {product.quantity}
+                  <Typography
+                    variant="body2"
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
+                    <Typography sx={{ mt: 1 }}>Số lượng: </Typography>
+
+                    <IconButton
+                      onClick={() => handleDecreaseQuantity(index)}
+                      sx={{ flex: "none" }}
+                    >
+                      -
+                    </IconButton>
+                    <TextField
+                      type="number"
+                      value={product.quantity}
+                      sx={{
+                        width: "5rem",
+                        height: "1.875rem",
+                        mx: "0.5rem",
+                        "& input[type='number']": {
+                          width: "100%",
+                          height: "100%",
+                          padding: "0.5rem",
+                          borderRadius: "0",
+                          "&::-webkit-inner-spin-button": {
+                            "-webkit-appearance": "none",
+                            margin: 0,
+                          },
+                        },
+                      }}
+                      onChange={(event) => {
+                        const newQuantity = parseInt(event.target.value, 10);
+                        if (!isNaN(newQuantity)) {
+                          handleUpdateQuantity(index, newQuantity);
+                        }
+                      }}
+                    />
+                    <IconButton
+                      onClick={() => handleIncreaseQuantity(index)}
+                      sx={{ flex: "none" }}
+                    >
+                      +
+                    </IconButton>
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid
+                  item
+                  xs={4}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
                   <Button
                     variant="contained"
                     color="error"
@@ -204,7 +236,6 @@ function ProductDetailPage() {
           </ListItem>
         </List>
       </Drawer>
-
       <Footer />
     </Grid>
   );

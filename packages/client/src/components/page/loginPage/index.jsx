@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
     Container,
     Grid,
@@ -13,7 +13,6 @@ import ResponsiveAppBar from "../../Nav-bar";
 import Footer from "../../footer";
 
 const LoginPage = () => {
-    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: "",
         password: "",
@@ -30,7 +29,6 @@ const LoginPage = () => {
     const saveTokenToLocalStorage = (token) => {
         localStorage.setItem("jwtToken", token);
     };
-    //const history = useHistory();
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -51,7 +49,9 @@ const LoginPage = () => {
                 const mockToken = data.token;
                 setToken(mockToken);
                 saveTokenToLocalStorage(mockToken);
-                navigate("/");
+                setErrorMessage("successful ");
+                window.location.href = "/";
+                console.log(1);
             } else {
                 const errorData = await response.json();
                 setErrorMessage(errorData.message);
