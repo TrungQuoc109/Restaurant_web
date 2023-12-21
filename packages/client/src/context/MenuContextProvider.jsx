@@ -14,6 +14,22 @@ export const MenuContextProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [orderedProducts, setOrderedProducts] = useState([]);
+  useEffect(() => {
+    const productData = {
+      category: "Lẩu",
+      id: 3,
+      name: "Lẩu Chua Cá Linh - Bông Điên Điển",
+      image: {
+        imageData:
+          "/9j/4AAQSkZJRgABAQAAAQABAAD/4gIoSUNDX1BST0ZJTEUAAQ…B65JxWNrfhG/ttOkktmUJLKSCSRkE5+vYf562nyoy5lKR/9k=",
+      },
+      price: "600000.00",
+      quantity: 1,
+    };
+
+    setOrderedProducts([...orderedProducts, productData]);
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
@@ -21,18 +37,14 @@ export const MenuContextProvider = ({ children }) => {
       setIsLoggedIn(true);
     }
   }, []);
+  const checkisLoggedIn = () => {
+    const jwtToken = localStorage.getItem("jwtToken"); // Thay 'jwtToken' bằng key chứa JWT Token trong Local Storage của bạn
+    return jwtToken !== null; // Trả về true nếu jwtToken tồn tại, ngược lại trả về false
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("jwtToken");
     setIsLoggedIn(false);
-  };
-
-  const handleUserCheckout = () => {
-    if (isLoggedIn) {
-      window.location.href = "/checkout";
-    } else {
-      window.location.href = "/login";
-    }
   };
 
   const handleSearchChange = (event) => {
@@ -52,32 +64,22 @@ export const MenuContextProvider = ({ children }) => {
   };
 
   const handleRemoveItem = (indexToRemove) => {
-    const updatedCartItems = [...cartItems];
-    const removedItem = updatedCartItems.splice(indexToRemove, 1)[0];
-
-    setCartItems(updatedCartItems);
-
-    const newTotalPrice = totalPrice - removedItem.price * removedItem.quantity;
-    setTotalPrice(newTotalPrice);
+    const updatedOrderedProducts = [...orderedProducts];
+    updatedOrderedProducts.splice(indexToRemove, 1);
+    setOrderedProducts(updatedOrderedProducts);
   };
 
-  const handleIncreaseQuantity = (index) => {
-    const updatedCartItems = [...cartItems];
-    updatedCartItems[index].quantity += 1;
-
-    setCartItems(updatedCartItems);
-    updateTotalPrice(updatedCartItems);
-    updateLocalStorage(updatedCartItems);
+  const handleIncreaseQuantity = (indexToUpdate) => {
+    const updatedOrderedProducts = [...orderedProducts];
+    updatedOrderedProducts[indexToUpdate].quantity += 1;
+    setOrderedProducts(updatedOrderedProducts);
   };
 
-  const handleDecreaseQuantity = (index) => {
-    const updatedCartItems = [...cartItems];
-    if (updatedCartItems[index].quantity > 1) {
-      updatedCartItems[index].quantity -= 1;
-
-      setCartItems(updatedCartItems);
-      updateTotalPrice(updatedCartItems);
-      updateLocalStorage(updatedCartItems);
+  const handleDecreaseQuantity = (indexToUpdate) => {
+    const updatedOrderedProducts = [...orderedProducts];
+    if (updatedOrderedProducts[indexToUpdate].quantity > 1) {
+      updatedOrderedProducts[indexToUpdate].quantity -= 1;
+      setOrderedProducts(updatedOrderedProducts);
     }
   };
 
@@ -95,45 +97,34 @@ export const MenuContextProvider = ({ children }) => {
 
     localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
   };
-  const handleAddToCart = (product) => {
-    const existingItemIndex = cartItems.findIndex(
-      (item) => item.id === product.id
+
+  const handleAddToCart = (selectedProduct) => {
+    const isProductInCart = orderedProducts.find(
+      (product) => product.id === selectedProduct.id
     );
 
-    if (existingItemIndex !== -1) {
-      const updatedCartItems = [...cartItems];
-      updatedCartItems[existingItemIndex].quantity += 1;
-      setCartItems(updatedCartItems);
-
-      const newTotalPrice = calculateTotalPrice(updatedCartItems);
-      setTotalPrice(newTotalPrice);
+    if (isProductInCart) {
+      const updatedProducts = orderedProducts.map((product) => {
+        if (product.id === selectedProduct.id) {
+          return { ...product, quantity: product.quantity + 1 };
+        }
+        return product;
+      });
+      setOrderedProducts(updatedProducts);
     } else {
-      const newItem = {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: 1,
-        image: product.image,
-      };
-      setCartItems([...cartItems, newItem]);
-
-      const newTotalPrice = calculateTotalPrice([...cartItems, newItem]);
-      setTotalPrice(newTotalPrice);
+      const updatedOrderedProducts = [
+        ...orderedProducts,
+        { ...selectedProduct, quantity: 1 },
+      ];
+      setOrderedProducts(updatedOrderedProducts);
+      console.log("Ordered Products:", updatedOrderedProducts);
     }
   };
-
-  const calculateTotalPrice = (items) => {
-    return items.reduce((total, item) => total + item.price * item.quantity, 0);
+  const calculateTotalPrice = () => {
+    return orderedProducts.reduce((total, product) => {
+      return total + product.price * product.quantity;
+    }, 0);
   };
-
-  useEffect(() => {
-    window.localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
-
-  useEffect(() => {
-    const storedCartItems = window.localStorage.getItem("cartItems");
-    setCartItems(storedCartItems ? JSON.parse(storedCartItems) : []);
-  }, []);
 
   useEffect(() => {
     let total = 0;
@@ -176,6 +167,7 @@ export const MenuContextProvider = ({ children }) => {
 
     fetchMenuItems();
   }, []);
+
   const contextValue = {
     products,
     product,
@@ -186,12 +178,15 @@ export const MenuContextProvider = ({ children }) => {
     totalPrice,
     loading,
     isLoggedIn,
+    orderedProducts,
+    checkisLoggedIn,
     setIsLoggedIn,
+    setOrderedProducts,
     handleLogout,
-    handleUserCheckout,
     handleDecreaseQuantity,
     handleIncreaseQuantity,
     handleUpdateQuantity,
+    calculateTotalPrice,
     handleSearchChange,
     handleCategoryChange,
     handleDrawerOpen,

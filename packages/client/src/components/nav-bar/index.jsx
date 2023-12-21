@@ -110,8 +110,9 @@ function ResponsiveAppBar() {
                     onClick={() => {
                       handleLogout();
                       handleCloseUserMenu();
-                      window.location.href = "/login";
                     }}
+                    component={Link}
+                    to="/login"
                     textAlign="center"
                     style={{ textDecoration: "none", color: "inherit" }}
                   >

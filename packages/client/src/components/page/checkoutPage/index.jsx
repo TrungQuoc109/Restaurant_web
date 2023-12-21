@@ -17,17 +17,17 @@ import {
   IconButton,
 } from "@mui/material";
 import { useMenuContext } from "../../../context/MenuContextProvider";
-import ResponsiveAppBar from "../../Nav-bar";
+import ResponsiveAppBar from "../../nav-bar";
 import Footer from "../../footer";
 
 function CheckoutPage() {
   const {
-    cartItems,
-    totalPrice,
+    orderedProducts,
     handleRemoveItem,
     handleUpdateQuantity,
     handleDecreaseQuantity,
     handleIncreaseQuantity,
+    calculateTotalPrice,
   } = useMenuContext();
   const [address, setAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -106,8 +106,8 @@ function CheckoutPage() {
                       onChange={handleShipMethodChange}
                       label="Phương thức thanh toán"
                     >
-                      <MenuItem value="Delivery">Delivery</MenuItem>
-                      <MenuItem value="SelfPickup">Self Pick-up</MenuItem>
+                      <MenuItem value="Delivery">Giao hàng</MenuItem>
+                      <MenuItem value="SelfPickup">Lấy món tại quán</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -131,21 +131,23 @@ function CheckoutPage() {
               </Typography>
               <Divider />
               <br />
-              {cartItems.length === 0 ? (
+              {orderedProducts.length === 0 ? (
                 <Typography variant="subtitle1" align="center">
                   Giỏ hàng của bạn trống.
                 </Typography>
               ) : (
                 <Grid container spacing={2}>
-                  {cartItems.map((product, index) => (
+                  {orderedProducts.map((product, index) => (
                     <Grid container item xs={12} key={index}>
                       <Grid item xs={4}>
-                        <CardMedia
-                          component="img"
-                          height="150"
-                          src={`data:image/png;base64, ${product.image.imageData}`}
-                          alt={product.name}
-                        />
+                        {product.image && product.image.imageData && (
+                          <CardMedia
+                            component="img"
+                            height="180"
+                            src={`data:image/png;base64, ${product.image.imageData}`}
+                            alt={product.name}
+                          />
+                        )}
                       </Grid>
                       <Grid item xs={8}>
                         <Typography variant="h6" sx={{ marginLeft: "8px" }}>
@@ -237,7 +239,7 @@ function CheckoutPage() {
 
                   <Grid item xs={12}>
                     <Typography variant="h6">
-                      Tổng cộng: {totalPrice}
+                      Tổng: ${calculateTotalPrice()} đ
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
