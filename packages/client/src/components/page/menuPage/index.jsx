@@ -115,38 +115,36 @@ function Menupage() {
                                             image={`data:image/png;base64,${product.image}`}
                                             alt={product.name}
                                         />
+                                    </Link>
+                                    <CardContent>
+                                        <Typography
+                                            variant="h6"
+                                            component="div"
+                                        >
+                                            {product.name}
+                                        </Typography>
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                        >
+                                            Giá: {product.price} VND
+                                        </Typography>
 
-                                        <CardContent>
-                                            <Typography
-                                                variant="h6"
-                                                component="div"
-                                            >
-                                                {product.name}
-                                            </Typography>
-                                            <Typography
-                                                variant="body2"
-                                                color="text.secondary"
-                                            >
-                                                Giá: {product.price} VND
-                                            </Typography>
-
-                                            <Button
-                                                variant="contained"
-                                                sx={{
-                                                    backgroundColor: "#00470f",
-                                                    "&:hover": {
-                                                        backgroundColor:
-                                                            "#a80e0e",
-                                                    },
-                                                }}
-                                                onClick={() =>
-                                                    handleAddToCart(product)
-                                                }
-                                            >
-                                                Đặt
-                                            </Button>
-                                        </CardContent>
-                                   
+                                        <Button
+                                            variant="contained"
+                                            sx={{
+                                                backgroundColor: "#00470f",
+                                                "&:hover": {
+                                                    backgroundColor: "#a80e0e",
+                                                },
+                                            }}
+                                            onClick={() =>
+                                                handleAddToCart(product)
+                                            }
+                                        >
+                                            Đặt
+                                        </Button>
+                                    </CardContent>
                                 </Card>
                             </Grid>
                         ))}
