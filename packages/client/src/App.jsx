@@ -2,11 +2,13 @@ import "./App.css";
 import Homepage from "./components/page/homepage";
 import { Route, Routes } from "react-router-dom";
 import Menupage from "./components/page/menuPage";
-import BookingTablePage from "./components/page/BookingTablePage";
+import BookingTablePage from "./components/page/bookingtablePage";
 import LoginPage from "./components/page/loginPage";
 import SignUpPage from "./components/page/signupPage";
 import ProductDetailPage from "./components/page/productPage";
 import AboutUsPage from "./components/page/aboutrestaurantPage";
+import CheckoutPage from "./components/page/checkoutPage";
+import UserPage from "./components/page/userPage";
 import { MenuContextProvider } from "./context/MenuContextProvider";
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/aboutus" element={<AboutUsPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/userpage" element={<UserPage />} />
         <Route path="/product/:id" element={<ProductDetailPage />} />
       </Routes>
     </MenuContextProvider>

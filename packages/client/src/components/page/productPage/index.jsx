@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import {
   Grid,
   Card,
@@ -14,6 +14,7 @@ import {
   Divider,
   IconButton,
   TextField,
+  Box,
 } from "@mui/material";
 import ResponsiveAppBar from "../../Nav-bar";
 import Footer from "../../footer";
@@ -36,7 +37,15 @@ function ProductDetailPage() {
     handleUpdateQuantity,
     handleDecreaseQuantity,
     handleIncreaseQuantity,
+    handleUserCheckout,
   } = useMenuContext();
+
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   useEffect(() => {
     const fetchItemDetail = async () => {
       try {
@@ -159,6 +168,16 @@ function ProductDetailPage() {
           {cartItems.map((product, index) => (
             <ListItem key={index}>
               <Grid container spacing={1}>
+                <Grid item xs={4}>
+                  {product.image && product.image.imageData && (
+                    <CardMedia
+                      component="img"
+                      height="100"
+                      src={`data:image/png;base64, ${product.image.imageData}`}
+                      alt={product.name}
+                    />
+                  )}
+                </Grid>
                 <Grid item xs={8}>
                   <Typography variant="subtitle1">
                     Tên: {product.name}
@@ -227,14 +246,58 @@ function ProductDetailPage() {
                     Xóa
                   </Button>
                 </Grid>
+                <Grid item xs={12}>
+                  <br />
+                  <Divider />
+                </Grid>
               </Grid>
             </ListItem>
           ))}
-          <Divider />
+        </List>
+        <Box
+          sx={{
+            position: "sticky",
+            bottom: 0,
+            left: 0,
+            width: "88.11%",
+            bgcolor: "background.paper",
+            py: 2,
+            px: 3,
+            zIndex: 999,
+          }}
+        >
           <ListItem>
             <ListItemText primary={`Tổng: ${totalPrice}`} />
           </ListItem>
-        </List>
+          <Grid container spacing={2} justifyContent="center">
+            <Grid item xs={12} md={6}>
+              <Button
+                onClick={handleUserCheckout}
+                variant="contained"
+                color="primary"
+                sx={{
+                  backgroundColor: "#00470f",
+                  "&:hover": { backgroundColor: "#a80e0e" },
+                }}
+                fullWidth
+              >
+                Checkout
+              </Button>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={() => {
+                  // Xử lý cho nút 'Xác nhận đặt bàn'
+                }}
+              >
+                Đặt bàn
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
       </Drawer>
       <Footer />
     </Grid>
