@@ -14,16 +14,15 @@ export const MenuContextProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  //đây là cart
   const [orderedProducts, setOrderedProducts] = useState([]);
   useEffect(() => {
     const productData = {
       category: "Lẩu",
       id: 3,
       name: "Lẩu Chua Cá Linh - Bông Điên Điển",
-      image: {
-        imageData:
-          "/9j/4AAQSkZJRgABAQAAAQABAAD/4gIoSUNDX1BST0ZJTEUAAQ…B65JxWNrfhG/ttOkktmUJLKSCSRkE5+vYf562nyoy5lKR/9k=",
-      },
+      image: "/public/image/produce/Combo/Combo Họp Mặt 1.jpg",
       price: "600000.00",
       quantity: 1,
     };
@@ -37,10 +36,6 @@ export const MenuContextProvider = ({ children }) => {
       setIsLoggedIn(true);
     }
   }, []);
-  const checkisLoggedIn = () => {
-    const jwtToken = localStorage.getItem("jwtToken"); // Thay 'jwtToken' bằng key chứa JWT Token trong Local Storage của bạn
-    return jwtToken !== null; // Trả về true nếu jwtToken tồn tại, ngược lại trả về false
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("jwtToken");
@@ -179,7 +174,6 @@ export const MenuContextProvider = ({ children }) => {
     loading,
     isLoggedIn,
     orderedProducts,
-    checkisLoggedIn,
     setIsLoggedIn,
     setOrderedProducts,
     handleLogout,

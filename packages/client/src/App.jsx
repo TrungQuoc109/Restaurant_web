@@ -9,6 +9,9 @@ import ProductDetailPage from "./components/page/productPage";
 import AboutUsPage from "./components/page/aboutrestaurantPage";
 import CheckoutPage from "./components/page/checkoutPage";
 import UserPage from "./components/page/userPage";
+import ProductManagementPage from "./components/page/Admin/productManagementPage";
+import InvoiceManagementPage from "./components/page/Admin/InvoiceManagementPage";
+import UserManagementPage from "./components/page/Admin/UserManagementPage";
 import { MenuContextProvider } from "./context/MenuContextProvider";
 
 function App() {
@@ -23,6 +26,15 @@ function App() {
         <Route path="/aboutus" element={<AboutUsPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/userpage" element={<UserPage />} />
+        <Route
+          path="/ProductManagementPage"
+          element={<ProductManagementPage />}
+        />
+        <Route
+          path="/InvoiceManagementPage"
+          element={<InvoiceManagementPage />}
+        />
+        <Route path="/UserManagementPage" element={<UserManagementPage />} />
         <Route path="/product/:id" element={<ProductDetailPage />} />
       </Routes>
     </MenuContextProvider>
