@@ -49,7 +49,7 @@ const LoginPage = () => {
                 const mockToken = data.token;
                 setToken(mockToken);
                 saveTokenToLocalStorage(mockToken);
-                setErrorMessage("successful ");
+                setErrorMessage("successful");
                 window.location.href = "/";
                 console.log(1);
             } else {
@@ -125,11 +125,21 @@ const LoginPage = () => {
                                 </Typography>
                             </Grid>
                         </form>
-                        {errorMessage && (
+                        {errorMessage && errorMessage !== "successful" && (
                             <Typography
                                 variant="body2"
                                 color="error"
                                 align="center"
+                            >
+                                {errorMessage}
+                            </Typography>
+                        )}
+                        {errorMessage === "successful" && (
+                            <Typography
+                                variant="body2"
+                                color="primary"
+                                align="center"
+                                style={{ color: "green" }}
                             >
                                 {errorMessage}
                             </Typography>

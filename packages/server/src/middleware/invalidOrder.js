@@ -1,7 +1,6 @@
 import moment from "moment";
 const checkReservationOrder = (req, res, next) => {
-    const { appointment_date, appointment_time, table_ID, number_of_guests } =
-        req.body;
+    const { appointment_date, appointment_time, number_of_guests } = req.body;
     const customer_ID = req.account.customer_id;
     if (
         !appointment_date ||

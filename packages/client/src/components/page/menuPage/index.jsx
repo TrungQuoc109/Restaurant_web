@@ -19,6 +19,7 @@ import {
     Divider,
     IconButton,
     CircularProgress,
+    Box,
 } from "@mui/material";
 import ResponsiveAppBar from "../../Nav-bar";
 import Footer from "../../footer";
@@ -27,6 +28,7 @@ import { useMenuContext } from "../../../context/MenuContextProvider";
 import { MdOutlineShoppingCart } from "react-icons/md";
 
 function Menupage() {
+    const [currentPage, setCurrentPage] = useState(1);
     const {
         products,
         selectedCategory,
@@ -37,10 +39,13 @@ function Menupage() {
         isCartOpen,
         cartItems,
         totalPrice,
+        handleUserCheckout,
         handleDrawerOpen,
         handleDrawerClose,
         handleRemoveItem,
-        handleAddToCart,
+        handleUpdateQuantity,
+        handleDecreaseQuantity,
+        handleIncreaseQuantity,
     } = useMenuContext();
 
     const filteredProducts = products.filter((product) => {
@@ -59,6 +64,23 @@ function Menupage() {
             );
         }
     });
+
+    const productsPerPage = 9;
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+    const currentProducts = filteredProducts.slice(
+        indexOfFirstProduct,
+        indexOfLastProduct
+    );
+    const pages = Array.from({
+        length: Math.ceil(filteredProducts.length / productsPerPage),
+    });
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    const linkStyle = {
+        textDecoration: "none",
+        ml: 2,
+    };
 
     return (
         <Grid>
@@ -99,140 +121,238 @@ function Menupage() {
                     </Grid>
                 ) : (
                     <Grid container spacing={3} marginTop={1}>
-                        {filteredProducts.map((product) => (
+                        {currentProducts.map((product) => (
                             <Grid item xs={12} sm={6} md={4} key={product.id}>
-                                <Card>
-                                    <Link
-                                        to={`/product/${product.id}`}
-                                        style={{
-                                            textDecoration: "none",
-                                            color: "inherit",
-                                        }}
-                                    >
+                                <Link
+                                    to={`/product/${product.id}`}
+                                    style={linkStyle}
+                                >
+                                    <Card>
                                         <CardMedia
                                             component="img"
                                             height="300"
-                                            image={`data:image/png;base64,${product.image}`}
+                                            src={`data:image/png;base64, ${product.image}`}
                                             alt={product.name}
+                                            loading="lazy"
                                         />
-                                    </Link>
-                                    <CardContent>
-                                        <Typography
-                                            variant="h6"
-                                            component="div"
-                                        >
-                                            {product.name}
-                                        </Typography>
-                                        <Typography
-                                            variant="body2"
-                                            color="text.secondary"
-                                        >
-                                            Giá: {product.price} VND
-                                        </Typography>
 
-                                        <Button
-                                            variant="contained"
-                                            sx={{
-                                                backgroundColor: "#00470f",
-                                                "&:hover": {
-                                                    backgroundColor: "#a80e0e",
-                                                },
-                                            }}
-                                            onClick={() =>
-                                                handleAddToCart(product)
-                                            }
-                                        >
-                                            Đặt
-                                        </Button>
-                                    </CardContent>
-                                </Card>
+                                        <CardContent>
+                                            <Typography
+                                                variant="h6"
+                                                component="div"
+                                            >
+                                                {product.name}
+                                            </Typography>
+                                            <Typography
+                                                variant="body2"
+                                                color="text.secondary"
+                                            >
+                                                Giá: {product.price} đ
+                                            </Typography>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
                             </Grid>
                         ))}
                     </Grid>
                 )}
-                <IconButton
-                    onClick={handleDrawerOpen}
+            </Container>
+            <IconButton
+                onClick={handleDrawerOpen}
+                sx={{
+                    position: "fixed",
+                    bottom: 20,
+                    right: 20,
+                    zIndex: 999,
+                    backgroundColor: "#bdbdbd",
+                    borderRadius: "50%",
+                    padding: "1rem",
+                    mr: 1,
+                    fontSize: "2rem",
+                }}
+            >
+                <MdOutlineShoppingCart />
+            </IconButton>
+            <Grid container justifyContent="center" marginTop={2}>
+                {Array.from({
+                    length: Math.ceil(products.length / productsPerPage),
+                }).map((_, index) => (
+                    <Button
+                        key={index}
+                        onClick={() => paginate(index + 1)}
+                        variant={
+                            currentPage === index + 1 ? "contained" : "outlined"
+                        }
+                        sx={{ margin: "0.2rem" }}
+                    >
+                        {index + 1}
+                    </Button>
+                ))}
+            </Grid>
+
+            <Drawer
+                anchor="right"
+                open={isCartOpen}
+                onClose={handleDrawerClose}
+            >
+                <List sx={{ width: 440 }}>
+                    <ListItem>
+                        <ListItemText primary="Giỏ hàng" />
+                    </ListItem>
+                    <Divider />
+                    {cartItems.map((product, index) => (
+                        <ListItem key={index}>
+                            <Grid container spacing={1}>
+                                <Grid item xs={4}>
+                                    {product.image &&
+                                        product.image.imageData && (
+                                            <CardMedia
+                                                component="img"
+                                                height="100"
+                                                src={`data:image/png;base64, ${product.image.imageData}`}
+                                                alt={product.name}
+                                            />
+                                        )}
+                                </Grid>
+                                <Grid item xs={8}>
+                                    <Typography variant="subtitle1">
+                                        Tên: {product.name}
+                                    </Typography>
+                                    <br />
+                                    <Typography variant="body2">
+                                        Giá: {product.price}
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <Typography sx={{ mt: 1 }}>
+                                            Số lượng:{" "}
+                                        </Typography>
+                                        <IconButton
+                                            onClick={() =>
+                                                handleDecreaseQuantity(index)
+                                            }
+                                            sx={{ flex: "none" }}
+                                        >
+                                            -
+                                        </IconButton>
+                                        <TextField
+                                            type="number"
+                                            value={product.quantity}
+                                            sx={{
+                                                width: "5rem",
+                                                height: "1.875rem",
+                                                mx: "0.5rem",
+                                                "& input[type='number']": {
+                                                    width: "100%",
+                                                    height: "100%",
+                                                    padding: "0.5rem",
+                                                    borderRadius: "0",
+                                                    "&::-webkit-inner-spin-button":
+                                                        {
+                                                            "-webkit-appearance":
+                                                                "none",
+                                                            margin: 0,
+                                                        },
+                                                },
+                                            }}
+                                            onChange={(event) => {
+                                                const newQuantity = parseInt(
+                                                    event.target.value,
+                                                    10
+                                                );
+                                                if (!isNaN(newQuantity)) {
+                                                    handleUpdateQuantity(
+                                                        index,
+                                                        newQuantity
+                                                    );
+                                                }
+                                            }}
+                                        />
+                                        <IconButton
+                                            onClick={() =>
+                                                handleIncreaseQuantity(index)
+                                            }
+                                            sx={{ flex: "none" }}
+                                        >
+                                            +
+                                        </IconButton>
+                                    </Typography>
+                                </Grid>
+                                <Grid
+                                    item
+                                    xs={4}
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        onClick={() => handleRemoveItem(index)}
+                                    >
+                                        Xóa
+                                    </Button>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <br />
+                                    <Divider />
+                                </Grid>
+                            </Grid>
+                        </ListItem>
+                    ))}
+                </List>
+                <Box
                     sx={{
-                        position: "fixed",
-                        bottom: 20,
-                        right: 20,
+                        position: "sticky",
+                        bottom: 0,
+                        left: 0,
+                        width: "88.11%",
+                        bgcolor: "background.paper",
+                        py: 2,
+                        px: 3,
                         zIndex: 999,
-                        backgroundColor: "#bdbdbd",
-                        borderRadius: "50%",
-                        padding: "1rem",
-                        mr: 1,
-                        fontSize: "2rem",
                     }}
                 >
-                    <MdOutlineShoppingCart />
-                </IconButton>
-                <Drawer
-                    anchor="right"
-                    open={isCartOpen}
-                    onClose={handleDrawerClose}
-                >
-                    <List sx={{ width: 400 }}>
-                        <ListItem>
-                            <ListItemText primary="Giỏ hàng" />
-                        </ListItem>
-                        <Divider />
-                        {cartItems.map((item, index) => (
-                            <ListItem key={index}>
-                                <Grid container spacing={1}>
-                                    <Grid item xs={8}>
-                                        <Typography variant="subtitle1">
-                                            Tên: {item.name}
-                                        </Typography>
-                                        <Typography variant="body2">
-                                            Giá: {item.price}VND
-                                        </Typography>
-                                        <Typography variant="body2">
-                                            Số lượng: {item.quantity}
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                        <Button
-                                            variant="contained"
-                                            color="error"
-                                            onClick={() =>
-                                                handleRemoveItem(index)
-                                            }
-                                        >
-                                            Xóa
-                                        </Button>
-                                    </Grid>
-                                </Grid>
-                            </ListItem>
-                        ))}
-                        <Divider />
-                        <ListItem>
-                            <ListItemText primary={`Tổng: ${totalPrice} VND`} />
-                        </ListItem>
-                    </List>
-                    <Container>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            fullWidth
-                            onClick={() => {
-                                // Handle functionality for 'Check out' button
-                            }}
-                        >
-                            Check out
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            fullWidth
-                            onClick={() => {
-                                // Handle functionality for 'Xác nhận đặt bàn' button
-                            }}
-                        >
-                            Xác nhận đặt bàn
-                        </Button>
-                    </Container>
-                </Drawer>
-            </Container>
+                    <ListItem>
+                        <ListItemText primary={`Tổng: ${totalPrice}`} />
+                    </ListItem>
+                    <Grid container spacing={2} justifyContent="center">
+                        <Grid item xs={12} md={6}>
+                            <Button
+                                onClick={handleUserCheckout}
+                                variant="contained"
+                                color="primary"
+                                sx={{
+                                    backgroundColor: "#00470f",
+                                    "&:hover": { backgroundColor: "#a80e0e" },
+                                }}
+                                fullWidth
+                            >
+                                Checkout
+                            </Button>
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                fullWidth
+                                onClick={() => {
+                                    // Xử lý cho nút 'Xác nhận đặt bàn'
+                                }}
+                            >
+                                Đặt bàn
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Drawer>
             <Footer />
         </Grid>
     );
