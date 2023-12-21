@@ -128,7 +128,6 @@ export class CustomerService {
                 }
             );
 
-            console.log(totalGuestsWithinOneHour);
             if (
                 maxsize - totalGuestsWithinOneHour <
                 req.body.number_of_guests
