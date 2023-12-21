@@ -22,12 +22,12 @@ import Footer from "../../footer";
 
 function CheckoutPage() {
     const {
-        orderedProducts,
+        cartItems,
+        totalPrice,
         handleRemoveItem,
         handleUpdateQuantity,
         handleDecreaseQuantity,
         handleIncreaseQuantity,
-        calculateTotalPrice,
     } = useMenuContext();
     const [address, setAddress] = useState("");
     const [paymentMethod, setPaymentMethod] = useState("");
@@ -117,10 +117,10 @@ function CheckoutPage() {
                                             label="Phương thức thanh toán"
                                         >
                                             <MenuItem value="Delivery">
-                                                Giao hàng
+                                                Delivery
                                             </MenuItem>
                                             <MenuItem value="SelfPickup">
-                                                Lấy món tại quán
+                                                Self Pick-up
                                             </MenuItem>
                                         </Select>
                                     </FormControl>
@@ -145,13 +145,13 @@ function CheckoutPage() {
                             </Typography>
                             <Divider />
                             <br />
-                            {orderedProducts.length === 0 ? (
+                            {cartItems.length === 0 ? (
                                 <Typography variant="subtitle1" align="center">
                                     Giỏ hàng của bạn trống.
                                 </Typography>
                             ) : (
                                 <Grid container spacing={2}>
-                                    {orderedProducts.map((product, index) => (
+                                    {cartItems.map((product, index) => (
                                         <Grid
                                             container
                                             item
@@ -159,15 +159,12 @@ function CheckoutPage() {
                                             key={index}
                                         >
                                             <Grid item xs={4}>
-                                                {product.image &&
-                                                    product.image.imageData && (
-                                                        <CardMedia
-                                                            component="img"
-                                                            height="180"
-                                                            src={`data:image/png;base64, ${product.image.imageData}`}
-                                                            alt={product.name}
-                                                        />
-                                                    )}
+                                                <CardMedia
+                                                    component="img"
+                                                    height="150"
+                                                    src={`data:image/png;base64, ${product.image.imageData}`}
+                                                    alt={product.name}
+                                                />
                                             </Grid>
                                             <Grid item xs={8}>
                                                 <Typography
@@ -301,7 +298,7 @@ function CheckoutPage() {
 
                                     <Grid item xs={12}>
                                         <Typography variant="h6">
-                                            Tổng: ${calculateTotalPrice()} đ
+                                            Tổng cộng: {totalPrice}
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={12}>
