@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+
+import { Link, useNavigate } from "react-router-dom";
 import {
     Container,
     Grid,
@@ -9,15 +10,17 @@ import {
     Card,
     CardContent,
 } from "@mui/material";
-import ResponsiveAppBar from "../../Nav-bar";
+import ResponsiveAppBar from "../../nav-bar";
 import Footer from "../../footer";
-import jwt from "jsonwebtoken";
+import * as jwt_decode from "jwt-decode";
+import { useMenuContext } from "../../../context/MenuContextProvider";
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({
         username: "",
         password: "",
     });
+    const { isLoggedIn, setIsLoggedIn } = useMenuContext();
     const [token, setToken] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
     const handleInputChange = (e) => {
@@ -30,6 +33,7 @@ const LoginPage = () => {
     const saveTokenToLocalStorage = (token) => {
         localStorage.setItem("jwtToken", token);
     };
+    const navigate = useNavigate();
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -46,13 +50,18 @@ const LoginPage = () => {
 
             if (response.ok) {
                 const data = await response.json();
-
+                setIsLoggedIn(true);
                 const mockToken = data.token;
                 setToken(mockToken);
                 saveTokenToLocalStorage(mockToken);
-                const decodedToken = jwt.decode(data.token, { complete: true });
-                const userRoles = decodedToken.payload.role;
-                if (userRoles) window.location.href = "/";
+
+                const decodedToken = jwt_decode.jwtDecode(data.token);
+                const roles = decodedToken.role;
+                if (roles) {
+                    navigate("/ProductManagementPage");
+                } else {
+                    navigate("/menuPage");
+                }
             } else {
                 const errorData = await response.json();
                 setErrorMessage(errorData.message);

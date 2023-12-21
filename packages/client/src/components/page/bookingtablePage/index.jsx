@@ -16,19 +16,49 @@ import Footer from "../../footer";
 
 function BookingTablePage() {
     const [selectedTab, setSelectedTab] = useState(0);
+    const [formData, setFormData] = useState({
+        appointment_date: "",
+        appointment_time: "",
+        number_of_guests: 1,
+        note: "",
+    });
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    };
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
     };
-    const handleInputChange = (fieldName, value) => {
-        setFormData({
-            ...formData,
-            [fieldName]: value,
-        });
-    };
 
-    const handleSubmit = () => {
-        console.log(formData);
+    const token = localStorage.getItem("jwtToken");
+    const handleSubmit = async () => {
+        try {
+            const response = await fetch(
+                "http://localhost:8080/customer/reservation/",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(formData),
+                }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Đặt bàn thành công!", data);
+            } else {
+                const errorData = await response.json();
+                console.log(errorData.message);
+            }
+        } catch (error) {
+            console.error("Lỗi khi gọi API:", error);
+        }
     };
 
     const numberOfGuestsOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -56,19 +86,10 @@ function BookingTablePage() {
         "21:15",
         "21:30",
     ];
-    const [formData, setFormData] = useState({
-        customerName: "",
-        contactNumber: "",
-        appointment_date: "",
-        bookingDate: "",
-        appointment_time: bookingTimeOptions[0],
-        number_of_guests: 1,
-        note: "",
-    });
 
     const todayDate = new Date().toISOString().split("T")[0];
-    const futureDate = new Date();
 
+    const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 14);
     const twoWeeksLater = futureDate.toISOString().split("T")[0];
 
@@ -76,7 +97,7 @@ function BookingTablePage() {
         <Grid>
             <ResponsiveAppBar />
             <Container
-                maxWidth="lg" /*  */
+                maxWidth="lg"
                 sx={{ backgroundColor: "White", mt: "5rem" }}
             >
                 <Tabs
@@ -89,7 +110,6 @@ function BookingTablePage() {
                     sx={{ marginBottom: "1rem" }}
                 >
                     <Tab label="Đặt bàn" />
-                    <Tab label="Danh sách món" />
                 </Tabs>
                 {selectedTab === 0 && (
                     <Grid container spacing={3}>
@@ -99,67 +119,17 @@ function BookingTablePage() {
                         >
                             <br />
                             <Grid container spacing={3}>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        required
-                                        id="customerName"
-                                        name="customerName"
-                                        label="Nhập tên của bạn"
-                                        fullWidth
-                                        autoComplete="name"
-                                        variant="standard"
-                                        value={formData.customerName}
-                                        onChange={(e) =>
-                                            handleInputChange(
-                                                "customerName",
-                                                e.target.value
-                                            )
-                                        }
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        required
-                                        id="contactNumber"
-                                        name="contactNumber"
-                                        label="Số điện thoại"
-                                        fullWidth
-                                        autoComplete="tel"
-                                        variant="standard"
-                                        value={formData.contactNumber}
-                                        onChange={(e) =>
-                                            handleInputChange(
-                                                "contactNumber",
-                                                e.target.value
-                                            )
-                                        }
-                                        inputProps={{ type: "number" }}
-                                        sx={{
-                                            '& input[type="number"]::-webkit-inner-spin-button':
-                                                {
-                                                    "-webkit-appearance":
-                                                        "none",
-                                                    margin: 0,
-                                                },
-                                        }}
-                                    />
-                                </Grid>
                                 <Grid item xs={12}>
                                     <TextField
                                         required
                                         id="bookingDate"
-                                        name="bookingDate"
+                                        name="appointment_date"
                                         label="Ngày đặt"
                                         fullWidth
                                         type="date"
-                                        variant="standard"
+                                        variant="standard" // Thay đổi variant thành "outlined"
                                         value={formData.appointment_date}
-                                        onChange={(e) =>
-                                            handleInputChange(
-                                                "bookingDate",
-                                                e.target.value
-                                            )
-                                        }
+                                        onChange={handleInputChange}
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
@@ -169,6 +139,7 @@ function BookingTablePage() {
                                         }}
                                     />
                                 </Grid>
+
                                 <Grid item xs={12} sm={6}>
                                     <InputLabel id="bookingTime-label">
                                         <Typography variant="body2">
@@ -179,17 +150,14 @@ function BookingTablePage() {
                                         required
                                         labelId="bookingTime-label"
                                         id="bookingTime"
-                                        name="bookingTime"
+                                        name="appointment_time"
                                         fullWidth
                                         variant="standard"
-                                        defaultValue={bookingTimeOptions[0]}
-                                        value={formData.appointment_time}
-                                        onChange={(e) =>
-                                            handleInputChange(
-                                                "bookingTime",
-                                                e.target.value
-                                            )
+                                        value={
+                                            formData.appointment_time ||
+                                            bookingTimeOptions[0]
                                         }
+                                        onChange={handleInputChange}
                                     >
                                         {bookingTimeOptions.map(
                                             (timeOption) => (
@@ -213,16 +181,11 @@ function BookingTablePage() {
                                         required
                                         labelId="numberOfGuests-label"
                                         id="numberOfGuests"
-                                        name="numberOfGuests"
+                                        name="number_of_guests"
                                         fullWidth
                                         variant="standard"
                                         value={formData.number_of_guests}
-                                        onChange={(e) =>
-                                            handleInputChange(
-                                                "numberOfGuests",
-                                                e.target.value
-                                            )
-                                        }
+                                        onChange={handleInputChange}
                                         defaultValue={1}
                                     >
                                         {numberOfGuestsOptions.map((option) => (
@@ -238,19 +201,14 @@ function BookingTablePage() {
                                 <Grid item xs={12}>
                                     <TextField
                                         id="specialRequests"
-                                        name="specialRequests"
+                                        name="note"
                                         label="Yêu cầu đặt biệt"
                                         fullWidth
                                         multiline
                                         rows={4}
                                         variant="standard"
                                         value={formData.note}
-                                        onChange={(e) =>
-                                            handleInputChange(
-                                                "specialRequests",
-                                                e.target.value
-                                            )
-                                        }
+                                        onChange={handleInputChange}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
@@ -265,11 +223,6 @@ function BookingTablePage() {
                                 </Grid>
                             </Grid>
                         </Container>
-                    </Grid>
-                )}
-                {selectedTab === 1 && (
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} sm={6}></Grid>
                     </Grid>
                 )}
             </Container>
