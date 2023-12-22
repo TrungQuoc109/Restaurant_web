@@ -14,7 +14,8 @@
     "dev:web": "cd packages/client && npm run dev"
   },
   "dependencies": {
-    "concurrently": "^8.2.0"
+    "concurrently": "^8.2.0",
+    "date-fns": "^3.0.4"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"

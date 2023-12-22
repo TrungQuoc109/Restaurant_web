@@ -20,7 +20,7 @@ const Reservation = sequelize.define(
         },
         table_ID: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+
             references: {
                 model: "Table",
                 key: "id",

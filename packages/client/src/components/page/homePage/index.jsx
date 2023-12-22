@@ -1,7 +1,7 @@
 import React from "react";
 import AutoScrollingBanner from "../../banners";
 import Footer from "../../footer";
-import ResponsiveAppBar from "../../Nav-bar";
+import ResponsiveAppBar from "../../nav-bar";
 
 import {
     Grid,
