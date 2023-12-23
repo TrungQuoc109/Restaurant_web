@@ -159,14 +159,23 @@ function DrawerComponent({
             </Link>
           </Grid>
           <Grid item xs={12} md={6}>
-            <Button
-              variant="contained"
-              color="primary"
-              fullWidth
-              onClick={() => {}}
-            >
-              Đặt bàn
-            </Button>
+            <Link to={isLoggedIn ? "/BookingTablePage" : "/login"}>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{
+                  backgroundColor: "#00470f",
+                  "&:hover": { backgroundColor: "#a80e0e" },
+                }}
+                fullWidth
+                onClick={() => {
+                  handleDrawerClose();
+                  handleTabChange(1);
+                }}
+              >
+                Đặt bàn
+              </Button>
+            </Link>
           </Grid>
         </Grid>
       </Box>
