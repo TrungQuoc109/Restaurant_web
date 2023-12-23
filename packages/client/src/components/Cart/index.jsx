@@ -56,7 +56,13 @@ function DrawerComponent({
               <Grid item xs={8}>
                 <Typography variant="subtitle1">Tên: {product.name}</Typography>
                 <br />
-                <Typography variant="body2">Giá: {product.price}</Typography>
+                <Typography variant="body2">
+                  Giá:{" "}
+                  {new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(product.price)}
+                </Typography>
                 <Typography
                   variant="body2"
                   sx={{ display: "flex", alignItems: "center" }}
@@ -139,7 +145,12 @@ function DrawerComponent({
         }}
       >
         <ListItem>
-          <ListItemText primary={`Tổng: ${calculateTotalPrice()} đ`} />
+          <ListItemText
+            primary={`Tổng: ${new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(calculateTotalPrice())}`}
+          />
         </ListItem>
         <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12} md={6}>

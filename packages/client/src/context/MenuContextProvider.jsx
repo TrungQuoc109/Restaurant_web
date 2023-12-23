@@ -126,14 +126,6 @@ export const MenuContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    let total = 0;
-    cartItems.forEach((cartItem) => {
-      total += parseFloat(cartItem.price) * cartItem.quantity;
-    });
-    setTotalPrice(total.toFixed(3));
-  }, [cartItems]);
-
-  useEffect(() => {
     const fetchMenuItems = async () => {
       try {
         const response = await fetch("http://localhost:8080/menu/");

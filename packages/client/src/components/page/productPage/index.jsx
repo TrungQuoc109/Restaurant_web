@@ -96,7 +96,12 @@ function ProductDetailPage() {
                 Loại: {product && product.category}
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Giá: {product && product.price}
+                Giá:{" "}
+                {product &&
+                  new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(product.price)}
               </Typography>
               <Grid
                 container

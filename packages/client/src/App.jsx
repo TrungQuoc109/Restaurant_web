@@ -1,5 +1,5 @@
 import "./App.css";
-import Homepage from "./components/page/homepage";
+import Homepage from "./components/page/homePage";
 import { Route, Routes } from "react-router-dom";
 import Menupage from "./components/page/menuPage";
 import BookingTablePage from "./components/page/bookingtablePage";
@@ -9,6 +9,7 @@ import ProductDetailPage from "./components/page/productPage";
 import AboutUsPage from "./components/page/aboutrestaurantPage";
 import CheckoutPage from "./components/page/checkoutPage";
 import UserPage from "./components/page/userPage";
+import OrderDetail from "./components/page/orderDetailPage";
 import ProductManagementPage from "./components/page/Admin/productManagementPage";
 import InvoiceManagementPage from "./components/page/Admin/InvoiceManagementPage";
 import UserManagementPage from "./components/page/Admin/UserManagementPage";
@@ -26,6 +27,7 @@ function App() {
         <Route path="/aboutus" element={<AboutUsPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/userpage" element={<UserPage />} />
+        <Route path="/order/:orderId" element={<OrderDetail />} />
         <Route
           path="/ProductManagementPage"
           element={<ProductManagementPage />}
