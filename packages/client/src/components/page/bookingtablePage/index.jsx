@@ -51,7 +51,8 @@ function BookingTablePage() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log("Đặt bàn thành công!", data);
+                localStorage.setItem("order_id", data.order.id);
+                console.log("Đặt bàn thành công!", data.order.id);
             } else {
                 const errorData = await response.json();
                 console.log(errorData.message);
