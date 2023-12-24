@@ -1,5 +1,6 @@
 import "./App.css";
 import Homepage from "./components/page/homePage";
+import Homepage from "./components/page/homePage";
 import { Route, Routes } from "react-router-dom";
 import Menupage from "./components/page/menuPage";
 import BookingTablePage from "./components/page/bookingtablePage";
@@ -9,6 +10,7 @@ import ProductDetailPage from "./components/page/productPage";
 import AboutUsPage from "./components/page/aboutrestaurantPage";
 import CheckoutPage from "./components/page/checkoutPage";
 import UserPage from "./components/page/userPage";
+import OrderDetail from "./components/page/orderDetailPage";
 import OrderDetail from "./components/page/orderDetailPage";
 import ProductManagementPage from "./components/page/Admin/productManagementPage";
 import InvoiceManagementPage from "./components/page/Admin/InvoiceManagementPage";

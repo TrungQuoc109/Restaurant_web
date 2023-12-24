@@ -12,7 +12,7 @@ import {
     ListItemText,
     Divider,
 } from "@mui/material";
-import ResponsiveAppBar from "../../Nav-bar";
+import ResponsiveAppBar from "../../nav-bar";
 import Footer from "../../footer";
 import { useMenuContext } from "../../../context/MenuContextProvider";
 function UserPage() {
