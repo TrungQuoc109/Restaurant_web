@@ -1,11 +1,13 @@
+import moment from "moment";
 import {
     Item,
+    Customer,
     Reservation,
-    ReservationOrderDetail,
     TakeOutOrder,
+    ReservationOrderDetail,
     TakeOutOrderDetail,
 } from "../model/index.model.js";
-import moment from "moment";
+
 export class orderService {
     static instance;
     static getInstance() {
@@ -109,7 +111,6 @@ export class orderService {
                 (a, b) => new Date(b.order_date) - new Date(a.order_date)
             );
 
-            console.log(combinedOrders);
             return res.status(200).send(combinedOrders);
         } catch (error) {
             res.status(500).json({ message: "Internal Server Error" });
@@ -192,6 +193,66 @@ export class orderService {
                 },
             });
             return res.status(200).json({ order_detail });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: "Internal Server Error" });
+        }
+    }
+    async getOrderByAdmin(req, res) {
+        try {
+            const takeoutOrders = await TakeOutOrder.findAll({
+                attributes: [
+                    "id",
+                    "order_date",
+                    "address",
+                    "note",
+                    "totalprice",
+                    "status",
+                ],
+                include: {
+                    model: Customer,
+                    attributes: ["name"],
+                },
+                raw: true,
+            });
+            const reservationOrders = await Reservation.findAll({
+                attributes: [
+                    "id",
+                    "order_date",
+                    "note",
+                    "appointment_date",
+                    "appointment_time",
+                    "totalprice",
+                    "status",
+                ],
+                include: {
+                    model: Customer,
+                    attributes: ["name"],
+                },
+                raw: true,
+            });
+
+            const combinedOrders = takeoutOrders
+                .map((order) => {
+                    order.order_date = moment(order.order_date).format(
+                        "DD/MM/YYYY HH:mm:ss"
+                    );
+                    order.order_type = "takeout";
+                    return order;
+                })
+                .concat(
+                    reservationOrders.map((order) => {
+                        order.order_date = moment(order.order_date).format(
+                            "DD/MM/YYYY HH:mm:ss"
+                        );
+                        order.order_type = "reservation";
+                        return order;
+                    })
+                );
+            combinedOrders.sort(
+                (a, b) => new Date(b.order_date) - new Date(a.order_date)
+            );
+            return res.status(200).send(combinedOrders);
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: "Internal Server Error" });

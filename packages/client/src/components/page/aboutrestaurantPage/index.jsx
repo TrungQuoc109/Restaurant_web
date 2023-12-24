@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Typography, Container, Card, CardMedia } from "@mui/material";
-import ResponsiveAppBar from "../../Nav-bar";
+import ResponsiveAppBar from "../../nav-bar";
 import Footer from "../../footer";
 
 const AboutUsPage = () => {

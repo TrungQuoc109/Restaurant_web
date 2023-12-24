@@ -20,5 +20,8 @@ export class OrderController {
     async getReservationOrderDetail(req, res) {
         return await orderServiceInstance.getReservationOrderDetail(req, res);
     }
+    async getOrderByAdmin(req, res) {
+        return await orderServiceInstance.getOrderByAdmin(req, res);
+    }
 }
 export const orderControllerInstance = OrderController.getInstance();

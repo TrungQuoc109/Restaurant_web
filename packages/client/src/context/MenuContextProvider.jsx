@@ -14,21 +14,13 @@ export const MenuContextProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [selectedTab, setSelectedTab] = useState(0);
+    const handleTabChange = (event, newValue) => {
+        setSelectedTab(newValue);
+    };
 
     //đây là cart
     const [orderedProducts, setOrderedProducts] = useState([]);
-    useEffect(() => {
-        const productData = {
-            category: "Lẩu",
-            id: 3,
-            name: "Lẩu Chua Cá Linh - Bông Điên Điển",
-            image: "/public/image/produce/Combo/Combo Họp Mặt 1.jpg",
-            price: "600000.00",
-            quantity: 1,
-        };
-
-        setOrderedProducts([...orderedProducts, productData]);
-    }, []);
 
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
@@ -176,6 +168,9 @@ export const MenuContextProvider = ({ children }) => {
         loading,
         isLoggedIn,
         orderedProducts,
+        selectedTab,
+        setSelectedTab,
+        handleTabChange,
         setIsLoggedIn,
         setOrderedProducts,
         handleLogout,
