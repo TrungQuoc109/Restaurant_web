@@ -23,7 +23,7 @@ function OrderDetail() {
     const token = localStorage.getItem("jwtToken");
     const { orderId, type } = useParams();
     useEffect(() => {
-        const fetchItemDetail = async () => {
+        const fetchOrderDetail = async () => {
             try {
                 const response = await fetch(
                     `http://localhost:8080/order/${orderId}/${type}`,
@@ -44,7 +44,7 @@ function OrderDetail() {
                 console.error("Error fetching order detail:");
             }
         };
-        fetchItemDetail();
+        fetchOrderDetail();
     }, [orderId, type, token, isLoggedIn, navigate]);
 
     return (
