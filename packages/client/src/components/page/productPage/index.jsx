@@ -44,12 +44,12 @@ function ProductDetailPage() {
       try {
         const response = await fetch(`http://localhost:8080/menu/${id}`);
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          throw new Error(`HTTP error! Status`);
         }
         const itemData = await response.json();
         setProduct(itemData);
       } catch (error) {
-        console.error("Error fetching item detail:", error);
+        console.error("Error fetching item detail:");
       } finally {
         setloading(false);
       }
@@ -116,7 +116,9 @@ function ProductDetailPage() {
                   variant="contained"
                   sx={{
                     backgroundColor: "#00470f",
-                    "&:hover": { backgroundColor: "#a80e0e" },
+                    "&:hover": {
+                      backgroundColor: "#a80e0e",
+                    },
                   }}
                 >
                   Đặt
@@ -126,7 +128,9 @@ function ProductDetailPage() {
                     variant="contained"
                     sx={{
                       backgroundColor: "#00470f",
-                      "&:hover": { backgroundColor: "#a80e0e" },
+                      "&:hover": {
+                        backgroundColor: "#a80e0e",
+                      },
                     }}
                   >
                     Trở lại

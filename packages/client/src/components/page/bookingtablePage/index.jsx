@@ -31,17 +31,14 @@ function BookingTablePage() {
     calculateTotalPrice,
     setSelectedTab,
   } = useMenuContext();
-
-  const handleSubmitWithMenu = (event) => {
-    event.preventDefault();
-    if (orderedProducts.length > 0) {
-      console.log("Form submitted!");
-      // Thêm phần xử lý khi submit ở đây
-    } else {
-      console.log("Không có sản phẩm trong danh sách. Không thể đặt!");
-      // Hiển thị thông báo hoặc thực hiện hành động khác nếu không có sản phẩm nào trong danh sách
-    }
-  };
+  const [formData, setFormData] = useState({
+    customerName: "",
+    contactNumber: "",
+    bookingDate: "",
+    bookingTime: "",
+    numberOfGuests: 1,
+    specialRequests: "",
+  });
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -88,56 +85,27 @@ function BookingTablePage() {
       <ResponsiveAppBar />
 
       <Container maxWidth="lg" sx={{ backgroundColor: "White", mt: "5rem" }}>
-        <Tabs
-          value={selectedTab}
-          onChange={handleTabChange}
-          variant="fullWidth"
-          textColor="primary"
-          indicatorColor="primary"
-          aria-label="booking tabs"
-          sx={{ marginBottom: "1rem" }}
-        >
-          <Tab label="Đặt bàn" />
-          <Tab label="Đặt bàn + món" />
-        </Tabs>
-        {selectedTab === 0 && (
-          <Grid container spacing={3}>
-            <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
+          <Tabs
+            value={selectedTab}
+            onChange={handleTabChange}
+            variant="fullWidth"
+            textColor="primary"
+            indicatorColor="primary"
+            aria-label="booking tabs"
+            sx={{ marginBottom: "1rem" }}
+          >
+            <Tab label="Đặt bàn" />
+            <Tab label="Đặt bàn + món" />
+          </Tabs>
+          {selectedTab === 0 && (
+            <Grid container spacing={3}>
               <Container
                 maxWidth="lg"
                 sx={{ backgroundColor: "White", mt: "1rem" }}
               >
                 <br />
                 <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      required
-                      id="customerName"
-                      name="customerName"
-                      label="Nhập tên của bạn"
-                      fullWidth
-                      autoComplete="name"
-                      variant="standard"
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      required
-                      id="contactNumber"
-                      name="contactNumber"
-                      label="Số điện thoại"
-                      fullWidth
-                      autoComplete="tel"
-                      variant="standard"
-                      inputProps={{ type: "number" }}
-                      sx={{
-                        '& input[type="number"]::-webkit-inner-spin-button': {
-                          "-webkit-appearance": "none",
-                          margin: 0,
-                        },
-                      }}
-                    />
-                  </Grid>
                   <Grid item xs={12}>
                     <TextField
                       required
@@ -207,59 +175,21 @@ function BookingTablePage() {
                       variant="standard"
                     />
                   </Grid>
-                  <Grid item xs={12}>
-                    <Button
-                      type="submit"
-                      sx={{ mb: "1rem" }}
-                      variant="contained"
-                      color="primary"
-                    >
-                      Đặt bàn ngay
-                    </Button>
-                  </Grid>
                 </Grid>
               </Container>
-            </form>
-          </Grid>
-        )}
-        {selectedTab === 1 && (
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
-              <form onSubmit={handleSubmitWithMenu}>
+            </Grid>
+          )}
+          {selectedTab === 1 && (
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
                 <Container
                   maxWidth="lg"
-                  sx={{ backgroundColor: "White", mt: "1rem" }}
+                  sx={{
+                    backgroundColor: "White",
+                    mt: "1rem",
+                  }}
                 >
                   <Grid container spacing={3}>
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        required
-                        id="customerName"
-                        name="customerName"
-                        label="Nhập tên của bạn"
-                        fullWidth
-                        autoComplete="name"
-                        variant="standard"
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        required
-                        id="contactNumber"
-                        name="contactNumber"
-                        label="Số điện thoại"
-                        fullWidth
-                        autoComplete="tel"
-                        variant="standard"
-                        inputProps={{ type: "number" }}
-                        sx={{
-                          '& input[type="number"]::-webkit-inner-spin-button': {
-                            "-webkit-appearance": "none",
-                            margin: 0,
-                          },
-                        }}
-                      />
-                    </Grid>
                     <Grid item xs={12}>
                       <TextField
                         required
@@ -329,143 +259,175 @@ function BookingTablePage() {
                         variant="standard"
                       />
                     </Grid>
-                    <Grid item xs={12}>
-                      <Button
-                        type="submit"
-                        sx={{ mb: "1rem" }}
-                        variant="contained"
-                        color="primary"
-                      >
-                        Đặt bàn ngay
-                      </Button>
-                    </Grid>
                   </Grid>
                 </Container>
-              </form>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <Typography variant="h5" gutterBottom>
-                    Danh sách sản phẩm đã đặt
-                  </Typography>
-                  <Grid item xs={12} sx={{ mb: "1rem" }}>
-                    <Typography variant="h6">
-                      Tổng: {calculateTotalPrice()} đ<Divider />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <Typography variant="h5" gutterBottom>
+                      Danh sách sản phẩm đã đặt
                     </Typography>
-                  </Grid>
-                  {orderedProducts.length === 0 ? (
-                    <Typography variant="subtitle1" align="center">
-                      Danh sách của bạn trống.
-                    </Typography>
-                  ) : (
-                    <Grid container spacing={2}>
-                      {orderedProducts.map((product, index) => (
-                        <Grid container item xs={12} key={index}>
-                          <Grid item xs={4}>
-                            {product.image && product.image.imageData && (
-                              <CardMedia
-                                component="img"
-                                height="180"
-                                src={`data:image/png;base64, ${product.image.imageData}`}
-                                alt={product.name}
-                              />
-                            )}
-                          </Grid>
-                          <Grid item xs={8}>
-                            <Typography variant="h6" sx={{ marginLeft: "8px" }}>
-                              {product.name}
-                            </Typography>
-                            <Grid
-                              item
-                              xs={12}
-                              sx={{
-                                display: "flex",
-                              }}
-                            >
+                    <Grid item xs={12} sx={{ mb: "1rem" }}>
+                      <Typography variant="h6">
+                        Tổng:{" "}
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(calculateTotalPrice())}
+                        <Divider />
+                      </Typography>
+                    </Grid>
+                    {orderedProducts.length === 0 ? (
+                      <Typography variant="subtitle1" align="center">
+                        Danh sách của bạn trống.
+                      </Typography>
+                    ) : (
+                      <Grid container spacing={2}>
+                        {orderedProducts.map((product, index) => (
+                          <Grid container item xs={12} key={index}>
+                            <Grid item xs={4}>
+                              {product.image && product.image.imageData && (
+                                <CardMedia
+                                  component="img"
+                                  height="180"
+                                  src={`data:image/png;base64, ${product.image.imageData}`}
+                                  alt={product.name}
+                                />
+                              )}
+                            </Grid>
+                            <Grid item xs={8}>
+                              <Typography
+                                variant="h6"
+                                sx={{
+                                  marginLeft: "8px",
+                                }}
+                              >
+                                {product.name}
+                              </Typography>
+                              <Grid
+                                item
+                                xs={12}
+                                sx={{
+                                  display: "flex",
+                                }}
+                              >
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    marginLeft: "8px",
+                                  }}
+                                >
+                                  Giá:
+                                  {new Intl.NumberFormat("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }).format(product.price)}
+                                </Typography>
+                                <Grid container justifyContent="flex-end">
+                                  <Button
+                                    variant="contained"
+                                    color="error"
+                                    onClick={() => handleRemoveItem(index)}
+                                  >
+                                    Xóa
+                                  </Button>
+                                </Grid>
+                              </Grid>
                               <Typography
                                 variant="body2"
-                                sx={{ marginLeft: "8px" }}
-                              >
-                                Giá: {product.price} đ
-                              </Typography>
-                              <Grid container justifyContent="flex-end">
-                                <Button
-                                  variant="contained"
-                                  color="error"
-                                  onClick={() => handleRemoveItem(index)}
-                                >
-                                  Xóa
-                                </Button>
-                              </Grid>
-                            </Grid>
-                            <Typography
-                              variant="body2"
-                              sx={{ display: "flex", alignItems: "center" }}
-                            >
-                              <Typography sx={{ mt: 1, ml: 1 }}>
-                                Số lượng:
-                              </Typography>
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              sx={{ display: "flex", alignItems: "center" }}
-                            >
-                              <IconButton
-                                onClick={() => handleDecreaseQuantity(index)}
-                                sx={{ flex: "none" }}
-                              >
-                                -
-                              </IconButton>
-                              <TextField
-                                type="number"
-                                value={product.quantity}
                                 sx={{
-                                  width: "5rem",
-                                  height: "1.875rem",
-                                  mx: "0.5rem",
-                                  "& input[type='number']": {
-                                    width: "100%",
-                                    height: "100%",
-                                    padding: "0.5rem",
-                                    borderRadius: "0",
-                                    "&::-webkit-inner-spin-button": {
-                                      "-webkit-appearance": "none",
-                                      margin: 0,
-                                    },
-                                  },
+                                  display: "flex",
+                                  alignItems: "center",
                                 }}
-                                onChange={(event) => {
-                                  const newQuantity = parseInt(
-                                    event.target.value,
-                                    10
-                                  );
-                                  if (!isNaN(newQuantity)) {
-                                    handleUpdateQuantity(index, newQuantity);
-                                  }
-                                }}
-                              />
-                              <IconButton
-                                onClick={() => handleIncreaseQuantity(index)}
-                                sx={{ flex: "none" }}
                               >
-                                +
-                              </IconButton>
-                            </Typography>
+                                <Typography
+                                  sx={{
+                                    mt: 1,
+                                    ml: 1,
+                                  }}
+                                >
+                                  Số lượng:
+                                </Typography>
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <IconButton
+                                  onClick={() => handleDecreaseQuantity(index)}
+                                  sx={{
+                                    flex: "none",
+                                  }}
+                                >
+                                  -
+                                </IconButton>
+                                <TextField
+                                  type="number"
+                                  value={product.quantity}
+                                  sx={{
+                                    width: "5rem",
+                                    height: "1.875rem",
+                                    mx: "0.5rem",
+                                    "& input[type='number']": {
+                                      width: "100%",
+                                      height: "100%",
+                                      padding: "0.5rem",
+                                      borderRadius: "0",
+                                      "&::-webkit-inner-spin-button": {
+                                        "-webkit-appearance": "none",
+                                        margin: 0,
+                                      },
+                                    },
+                                  }}
+                                  onChange={(event) => {
+                                    const newQuantity = parseInt(
+                                      event.target.value,
+                                      10
+                                    );
+                                    if (!isNaN(newQuantity)) {
+                                      handleUpdateQuantity(index, newQuantity);
+                                    }
+                                  }}
+                                />
+                                <IconButton
+                                  onClick={() => handleIncreaseQuantity(index)}
+                                  sx={{
+                                    flex: "none",
+                                  }}
+                                >
+                                  +
+                                </IconButton>
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                              <br />
+                              <Divider />
+                            </Grid>
                           </Grid>
-                          <Grid item xs={12}>
-                            <br />
-                            <Divider />
-                          </Grid>
-                        </Grid>
-                      ))}
-                    </Grid>
-                  )}
+                        ))}
+                      </Grid>
+                    )}
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
+          )}
+          <br />
+          <Grid item xs={12}>
+            <Button
+              type="submit"
+              sx={{ mb: "1rem" }}
+              variant="contained"
+              color="primary"
+            >
+              Đặt bàn ngay
+            </Button>
           </Grid>
-        )}
+        </form>
       </Container>
       <Footer />
     </Grid>

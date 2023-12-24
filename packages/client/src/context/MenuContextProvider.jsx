@@ -126,6 +126,14 @@ export const MenuContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    let total = 0;
+    cartItems.forEach((cartItem) => {
+      total += parseFloat(cartItem.price) * cartItem.quantity;
+    });
+    setTotalPrice(total.toFixed(3));
+  }, [cartItems]);
+
+  useEffect(() => {
     const fetchMenuItems = async () => {
       try {
         const response = await fetch("http://localhost:8080/menu/");
@@ -159,6 +167,30 @@ export const MenuContextProvider = ({ children }) => {
     fetchMenuItems();
   }, []);
 
+  const [productQuantities, setProductQuantities] = useState(
+    Array(products.length).fill(1)
+  );
+
+  const handleIncreaseQuantityAdminMenu = (index) => {
+    const newQuantities = [...productQuantities];
+    newQuantities[index] = productQuantities[index] + 1;
+    setProductQuantities(newQuantities);
+  };
+
+  const handleUpdateQuantityAdmin = (index, newQuantity) => {
+    const newQuantities = [...productQuantities];
+    newQuantities[index] = newQuantity;
+    setProductQuantities(newQuantities);
+  };
+
+  const handleDecreaseQuantityAdmin = (index) => {
+    if (productQuantities[index] > 1) {
+      const newQuantities = [...productQuantities];
+      newQuantities[index] = productQuantities[index] - 1;
+      setProductQuantities(newQuantities);
+    }
+  };
+
   const contextValue = {
     products,
     product,
@@ -171,6 +203,11 @@ export const MenuContextProvider = ({ children }) => {
     isLoggedIn,
     orderedProducts,
     selectedTab,
+    productQuantities,
+    setProductQuantities,
+    handleDecreaseQuantityAdmin,
+    handleIncreaseQuantityAdminMenu,
+    handleUpdateQuantityAdmin,
     setSelectedTab,
     handleTabChange,
     setIsLoggedIn,

@@ -36,6 +36,12 @@ const TakeOutOrder = sequelize.define(
         totalprice: {
             type: DataTypes.DECIMAL(10, 2),
         },
+        shippingMethod: {
+            type: DataTypes.STRING,
+        },
+        paymentType: {
+            type: DataTypes.STRING,
+        },
     },
     {
         model: "TakeOutOrder",

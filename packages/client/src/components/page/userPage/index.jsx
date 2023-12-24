@@ -22,11 +22,9 @@ function UserPage() {
     phone: "",
   });
   const [userOrders, setUserOrders] = useState([]);
-  // Điều chỉnh hoặc thay thế dữ liệu người dùng sau này
-  // Hàm định dạng ngày
 
   const token = localStorage.getItem("jwtToken");
-  const status = ["Đang chờ", "Đang xử lý", "Đang giao", "Đã thanh toán"];
+  const status = ["Đang chờ", "Đang xử lý", "Đang giao"];
   useEffect(() => {
     // Gọi API để lấy thông tin người dùng và đơn hàng
     const fetchUserData = async () => {
@@ -34,7 +32,7 @@ function UserPage() {
         const response = await fetch("http://localhost:8080/customer/", {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`, // Gửi token nếu có
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -44,8 +42,6 @@ function UserPage() {
             username: data.name,
             phone: data.phone,
           });
-        } else {
-          // Xử lý lỗi khi không thể lấy thông tin người dùng
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -56,9 +52,10 @@ function UserPage() {
         const response = await fetch("http://localhost:8080/order/", {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Use the jwtToken here
           },
         });
+
         if (response.ok) {
           const data = await response.json();
           setUserOrders(data);
@@ -70,9 +67,12 @@ function UserPage() {
       }
     };
 
+    if (token) {
+      fetchUserOrders();
+    }
+
     fetchUserData();
-    fetchUserOrders();
-  }, []);
+  }, [token]);
 
   return (
     <Grid>
@@ -122,7 +122,7 @@ function UserPage() {
                     <Button
                       variant="outlined"
                       component={Link}
-                      to={`/order/${order.id}`}
+                      to={`/order/${order.id}/${order.order_type}`}
                     >
                       Xem chi tiết
                     </Button>

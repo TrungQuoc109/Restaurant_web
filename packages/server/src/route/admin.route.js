@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
     menuControllerInstance,
+    orderControllerInstance,
     tableControllerInstance,
 } from "../controller/index.js";
 import multer from "multer";
@@ -60,5 +61,11 @@ adminRoute.delete(
     checkAdmin,
     //isInfoEmployee,
     managerControllerInstance.deleteEmployee
+);
+adminRoute.get(
+    "/orders",
+    checkAuth,
+    checkAdmin,
+    orderControllerInstance.getOrderByAdmin
 );
 export default adminRoute;

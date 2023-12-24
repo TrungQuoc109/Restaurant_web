@@ -23,6 +23,7 @@ function DrawerComponent({
   handleIncreaseQuantity,
   handleUpdateQuantity,
   calculateTotalPrice,
+  handleTabChange,
 }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -65,7 +66,10 @@ function DrawerComponent({
                 </Typography>
                 <Typography
                   variant="body2"
-                  sx={{ display: "flex", alignItems: "center" }}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
                 >
                   <Typography sx={{ mt: 1 }}>Số lượng: </Typography>
                   <IconButton
@@ -159,8 +163,7 @@ function DrawerComponent({
                 variant="contained"
                 color="primary"
                 sx={{
-                  backgroundColor: "#00470f",
-                  "&:hover": { backgroundColor: "#a80e0e" },
+                  zIndex: 999,
                 }}
                 fullWidth
                 onClick={handleDrawerClose}

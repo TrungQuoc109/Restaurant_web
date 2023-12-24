@@ -1,23 +1,23 @@
 {
-  "name": "restaurant_proj",
-  "version": "1.0.0",
-  "main": "index.js",
-  "repository": "https://github.com/TrungQuoc109/Restaurant_web.git",
-  "author": "",
-  "license": "",
-  "workspaces": [
-    "./packages/*"
-  ],
-  "scripts": {
-    "all": "npm-run-all  dev:server dev:web",
-    "dev:server": "cd packages/server && npm run dev",
-    "dev:web": "cd packages/client && npm run dev"
-  },
-  "dependencies": {
-    "concurrently": "^8.2.0",
-    "date-fns": "^3.0.4"
-  },
-  "devDependencies": {
-    "npm-run-all": "^4.1.5"
-  }
+    "name": "restaurant_proj",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "https://github.com/TrungQuoc109/Restaurant_web.git",
+    "author": "",
+    "license": "",
+    "workspaces": [
+        "./packages/*"
+    ],
+    "scripts": {
+        "all": "npm-run-all  dev:server dev:web",
+        "dev:server": "cd packages/server && npm run dev",
+        "dev:web": "cd packages/client && npm run dev"
+    },
+    "dependencies": {
+        "concurrently": "^8.2.0",
+        "date-fns": "^3.0.4"
+    },
+    "devDependencies": {
+        "npm-run-all": "^4.1.5"
+    }
 }

@@ -1,105 +1,142 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Container,
-  Typography,
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
-  Button,
-  Grid,
+    Container,
+    Typography,
+    Box,
+    List,
+    ListItem,
+    ListItemText,
+    Divider,
+    Button,
+    Grid,
 } from "@mui/material";
 import ResponsiveAppBar from "../../nav-bar";
 import Footer from "../../footer";
-
-const status = ["Đang chờ", "Đang xử lý", "Đang giao", "Đã thanh toán"];
+import { useMenuContext } from "../../../context/MenuContextProvider";
+import { useNavigate, useParams } from "react-router-dom";
 
 function OrderDetail() {
-  const orderData = {
-    id: 123,
-    order_date: "2023-12-01",
-    status: 3,
-    address: "123 Example Street",
-    note: "Some notes about the order",
-    totalprice: 2500000,
-  };
+    const [userOrders, setUserOrders] = useState(null);
+    const status = ["Đang chờ", "Đang xử lý", "Đang giao", "Đã thanh toán"];
+    const { isLoggedIn } = useMenuContext();
+    const navigate = useNavigate();
+    const token = localStorage.getItem("jwtToken");
+    const { orderId, type } = useParams();
+    useEffect(() => {
+        const fetchOrderDetail = async () => {
+            try {
+                const response = await fetch(
+                    `http://localhost:8080/order/${orderId}/${type}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status:`);
+                }
+                const data = await response.json();
+                // console.log(data);
+                setUserOrders(data);
+            } catch (error) {
+                console.error("Error fetching order detail:");
+            }
+        };
+        fetchOrderDetail();
+    }, [orderId, type, token, isLoggedIn, navigate]);
 
-  const orderItemsData = [
-    {
-      id: 1,
-      item_ID: 1,
-      quaity: 2,
-      amount: 50000,
-      note: "Some notes about item 1",
-    },
-    {
-      id: 2,
-      item_ID: 2,
-      quaity: 1,
-      amount: 100000,
-      note: "Some notes about item 2",
-    },
-    // Add more items as needed
-  ];
+    return (
+        <Grid>
+            <ResponsiveAppBar />
+            <Container>
+                <br />
+                <Box sx={{ textAlign: "center" }}>
+                    {userOrders && userOrders.order_detail && (
+                        <Typography variant="h4">
+                            Chi tiết đơn hàng #{userOrders.order_detail.id}
+                        </Typography>
+                    )}
+                    <Divider />
+                    <br />
 
-  return (
-    <Grid>
-      <ResponsiveAppBar />
-      <Container>
-        <br />
-        <Box sx={{ textAlign: "center" }}>
-          <Typography variant="h4">
-            Chi tiết đơn hàng #{orderData.id}
-          </Typography>
-          <Divider />
-          <br />
-          <Typography variant="h6">
-            Ngày đặt hàng: {orderData.order_date}
-          </Typography>
-          <Typography variant="h6">
-            Trạng thái: {status[orderData.status]}
-          </Typography>
-          <Typography variant="h6">Địa chỉ: {orderData.address}</Typography>
-          <Typography variant="h6">Ghi chú: {orderData.note}</Typography>
-          <Typography variant="h6">Tổng giá: {orderData.totalprice}</Typography>
-          <Button variant="outlined" onClick={() => window.history.back()}>
-            Quay lại
-          </Button>
-          <br />
-          <br />
-          <Typography variant="h5">Chi tiết đơn hàng</Typography>
-          <List>
-            {orderItemsData.map((item) => (
-              <Grid key={item.id}>
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <ListItemText
-                      primary={`Tên món: ${item.item_ID}`}
-                      secondary={`Số lượng: ${item.quaity}`}
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="body1">
-                      {`Giá: ${new Intl.NumberFormat("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      }).format(item.amount)}`}
-                    </Typography>
-                    <Typography variant="body2">
-                      {`Ghi chú: ${item.note}`}
-                    </Typography>
-                  </Grid>
-                  <Divider />
-                </Grid>
-              </Grid>
-            ))}
-          </List>
-        </Box>
-      </Container>
-      <Footer />
-    </Grid>
-  );
+                    {userOrders && userOrders.order_detail && (
+                        <Typography variant="h6">
+                            Trạng thái: {status[userOrders.order_detail.status]}
+                        </Typography>
+                    )}
+                    {userOrders &&
+                        userOrders.order_detail &&
+                        userOrders.order_detail &&
+                        ((userOrders.order_detail.address && (
+                            <Typography variant="h6">
+                                Địa chỉ: {userOrders.order_detail.address}
+                            </Typography>
+                        )) || (
+                            <Typography variant="h6">
+                                Ngày hẹn:{" "}
+                                {userOrders.order_detail.appointment_date}
+                                <br />
+                                Giờ hẹn:{" "}
+                                {userOrders.order_detail.appointment_time}
+                            </Typography>
+                        ))}
+                    {userOrders && userOrders.order_detail && (
+                        <Typography variant="h6">
+                            Ghi chú: {userOrders.order_detail.note}
+                        </Typography>
+                    )}
+                    {userOrders && userOrders.order_detail && (
+                        <Typography variant="h6">
+                            Tổng giá: {userOrders.order_detail.totalprice}
+                        </Typography>
+                    )}
+                    <Button
+                        variant="outlined"
+                        onClick={() => window.history.back()}
+                    >
+                        Quay lại
+                    </Button>
+                    <br />
+                    <br />
+                    <Typography variant="h5">Chi tiết đơn hàng</Typography>
+                    <List>
+                        {userOrders &&
+                            userOrders.order_detail &&
+                            userOrders.order_detail.detail.map((item) => (
+                                <Grid key={item.id}>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={6}>
+                                            <ListItemText
+                                                primary={`Tên món: ${item.Item.name}`}
+                                                secondary={`Số lượng: ${item.quantity}`}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography variant="body1">
+                                                {`Giá: ${new Intl.NumberFormat(
+                                                    "vi-VN",
+                                                    {
+                                                        style: "currency",
+                                                        currency: "VND",
+                                                    }
+                                                ).format(item.amount)}`}
+                                            </Typography>
+                                            <Typography variant="body2">
+                                                {`Ghi chú: ${item.note}`}
+                                            </Typography>
+                                        </Grid>
+                                        <Divider />
+                                    </Grid>
+                                </Grid>
+                            ))}
+                    </List>
+                </Box>
+            </Container>
+            <Footer />
+        </Grid>
+    );
 }
 
 export default OrderDetail;
