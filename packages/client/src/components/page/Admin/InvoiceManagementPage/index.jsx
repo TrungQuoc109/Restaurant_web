@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
     Typography,
     Button,
@@ -14,9 +14,13 @@ import {
     Container,
 } from "@mui/material";
 import AdminPage from "../adminNav";
+import * as jwt_decode from "jwt-decode";
+
 const InvoiceManagementPage = () => {
     const [invoices, setInvoices] = useState([]);
     const token = localStorage.getItem("jwtToken");
+    const navigate = useNavigate();
+
     const status = ["Đang chờ", "Đang xử lý", "Đang giao"];
     useEffect(() => {
         const fetchOrders = async () => {
@@ -31,17 +35,24 @@ const InvoiceManagementPage = () => {
                     }
                 );
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    throw new Error(`HTTP error!`);
                 }
                 const data = await response.json();
-                console.log(data);
+                //  console.log(data);
                 setInvoices(data);
             } catch (error) {
-                console.error("Error fetching orders:", error);
+                console.error("Error fetching orders:");
             }
         };
-
-        fetchOrders();
+        if (token) {
+            const decodedToken = jwt_decode.jwtDecode(token);
+            const roles = decodedToken.role;
+            if (roles) {
+                fetchOrders();
+            } else {
+                navigate("/");
+            }
+        } else navigate("/");
     }, []);
 
     const handleDelete = (id) => {

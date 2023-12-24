@@ -1,28 +1,27 @@
 import React, { useState, useEffect } from "react";
-
+import { Grid } from "@mui/material";
 function AutoScrollingBanner() {
   const [position, setPosition] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setPosition((prevPosition) => (prevPosition + 1) % totalImages);
-    }, 3000); // Change the duration (in milliseconds) to adjust the scrolling speed
+    }, 3000);
 
     return () => clearInterval(interval);
   }, []);
 
-  const totalImages = 3; // Replace with the total number of images in your banner
+  const totalImages = 3;
 
   return (
-    <div style={{ width: "100%", overflow: "hidden" }}>
-      <div
+    <Grid style={{ width: "100%", overflow: "hidden" }}>
+      <Grid
         style={{
           display: "flex",
           transition: "transform 0.5s",
-          transform: `translateX(-${position * 100}%)`, // Assuming each image takes 100% of the container width
+          transform: `translateX(-${position * 100}%)`,
         }}
       >
-        {/* Add your banner images here */}
         <img
           src="/public/image/ms_banner_img1.webp"
           alt="Image 1"
@@ -38,8 +37,8 @@ function AutoScrollingBanner() {
           alt="Image 3"
           style={{ width: "100%", flexShrink: 0 }}
         />
-      </div>
-    </div>
+      </Grid>
+    </Grid>
   );
 }
 

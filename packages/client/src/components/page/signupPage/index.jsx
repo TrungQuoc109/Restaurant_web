@@ -66,16 +66,14 @@ const SignUpPage = () => {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
             } else {
-                setErrorMessage(null); // Clear any previous error messages
-                setSuccessMessage(data.message); // Set success message received from the server
+                setErrorMessage(null);
+                setSuccessMessage(data.message);
                 setToken(data.token);
                 saveTokenToLocalStorage(data.token);
                 navigate("/login");
             }
-
-            //chuyên trang
         } catch (error) {
-            console.error("Error during registration:", error);
+            console.error("Error during registration:");
         }
     };
 

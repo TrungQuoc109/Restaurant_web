@@ -23,6 +23,7 @@ function DrawerComponent({
     handleIncreaseQuantity,
     handleUpdateQuantity,
     calculateTotalPrice,
+    handleTabChange,
 }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -59,7 +60,11 @@ function DrawerComponent({
                                 </Typography>
                                 <br />
                                 <Typography variant="body2">
-                                    Giá: {product.price}
+                                    Giá:{" "}
+                                    {new Intl.NumberFormat("vi-VN", {
+                                        style: "currency",
+                                        currency: "VND",
+                                    }).format(product.price)}
                                 </Typography>
                                 <Typography
                                     variant="body2"
@@ -161,7 +166,10 @@ function DrawerComponent({
             >
                 <ListItem>
                     <ListItemText
-                        primary={`Tổng: ${calculateTotalPrice()} đ`}
+                        primary={`Tổng: ${new Intl.NumberFormat("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                        }).format(calculateTotalPrice())}`}
                     />
                 </ListItem>
                 <Grid container spacing={2} justifyContent="center">
@@ -171,8 +179,14 @@ function DrawerComponent({
                                 variant="contained"
                                 color="primary"
                                 sx={{
-                                    backgroundColor: "#00470f",
-                                    "&:hover": { backgroundColor: "#a80e0e" },
+                                    position: "sticky",
+                                    bottom: 0,
+                                    left: 0,
+                                    width: "88.11%",
+                                    bgcolor: "background.paper",
+                                    py: 2,
+                                    px: 3,
+                                    zIndex: 999,
                                 }}
                                 fullWidth
                                 onClick={handleDrawerClose}
@@ -182,14 +196,23 @@ function DrawerComponent({
                         </Link>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            fullWidth
-                            onClick={() => {}}
-                        >
-                            Đặt bàn
-                        </Button>
+                        <Link to={isLoggedIn ? "/BookingTablePage" : "/login"}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                sx={{
+                                    backgroundColor: "#00470f",
+                                    "&:hover": { backgroundColor: "#a80e0e" },
+                                }}
+                                fullWidth
+                                onClick={() => {
+                                    handleDrawerClose();
+                                    handleTabChange(1);
+                                }}
+                            >
+                                Đặt bàn
+                            </Button>
+                        </Link>
                     </Grid>
                 </Grid>
             </Box>

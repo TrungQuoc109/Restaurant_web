@@ -68,12 +68,14 @@ export class CustomerService {
                 address: req.body.address,
                 note: req.body.note ?? "",
                 status: 0,
+                shippingMethod: req.body.shippingMethod,
+                paymentType: req.body.paymentType,
             });
             const item_list = req.body.item;
             const detailsPromises = item_list.map(async (item) => {
                 return await TakeOutOrderDetail.create({
                     item_id: item.id,
-                    order_id: order_id,
+                    order_id: order.id,
                     quantity: item.quantity ?? 1,
                     note: item.item_note ?? "",
                 });
@@ -81,7 +83,7 @@ export class CustomerService {
 
             await Promise.all(detailsPromises);
             const takeOut_Oder = await TakeOutOrder.findOne({
-                where: { id: order_id },
+                where: { id: order.id },
                 raw: true,
             });
             takeOut_Oder.item = await TakeOutOrderDetail.findAll({
@@ -189,12 +191,10 @@ export class CustomerService {
                 order_id: reservation_Oder.id,
             },
         });
-        return res
-            .status(200)
-            .json({
-                message: "Add food successfully",
-                order: reservation_Oder,
-            });
+        return res.status(200).json({
+            message: "Add food successfully",
+            order: reservation_Oder,
+        });
     }
 }
 

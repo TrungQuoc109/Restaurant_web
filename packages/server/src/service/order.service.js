@@ -56,7 +56,7 @@ export class orderService {
                 (a, b) => new Date(b.order_date) - new Date(a.order_date)
             );
 
-            console.log(combinedOrders);
+            //    console.log(combinedOrders);
             return res.status(200).send(combinedOrders);
         } catch (error) {
             res.status(500).json({ message: "Internal Server Error" });

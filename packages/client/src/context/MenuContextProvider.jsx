@@ -21,7 +21,6 @@ export const MenuContextProvider = ({ children }) => {
 
     //đây là cart
     const [orderedProducts, setOrderedProducts] = useState([]);
-
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
         if (token) {
@@ -112,14 +111,6 @@ export const MenuContextProvider = ({ children }) => {
             return total + product.price * product.quantity;
         }, 0);
     };
-
-    useEffect(() => {
-        let total = 0;
-        cartItems.forEach((cartItem) => {
-            total += parseFloat(cartItem.price) * cartItem.quantity;
-        });
-        setTotalPrice(total.toFixed(3));
-    }, [cartItems]);
 
     useEffect(() => {
         const fetchMenuItems = async () => {

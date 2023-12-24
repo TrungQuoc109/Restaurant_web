@@ -112,6 +112,37 @@ function BookingTablePage() {
                             >
                                 <br />
                                 <Grid container spacing={3}>
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            required
+                                            id="customerName"
+                                            name="customerName"
+                                            label="Nhập tên của bạn"
+                                            fullWidth
+                                            autoComplete="name"
+                                            variant="standard"
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            required
+                                            id="contactNumber"
+                                            name="contactNumber"
+                                            label="Số điện thoại"
+                                            fullWidth
+                                            autoComplete="tel"
+                                            variant="standard"
+                                            inputProps={{ type: "number" }}
+                                            sx={{
+                                                '& input[type="number"]::-webkit-inner-spin-button':
+                                                    {
+                                                        "-webkit-appearance":
+                                                            "none",
+                                                        margin: 0,
+                                                    },
+                                            }}
+                                        />
+                                    </Grid>
                                     <Grid item xs={12}>
                                         <TextField
                                             required
@@ -222,6 +253,37 @@ function BookingTablePage() {
                                     }}
                                 >
                                     <Grid container spacing={3}>
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField
+                                                required
+                                                id="customerName"
+                                                name="customerName"
+                                                label="Nhập tên của bạn"
+                                                fullWidth
+                                                autoComplete="name"
+                                                variant="standard"
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField
+                                                required
+                                                id="contactNumber"
+                                                name="contactNumber"
+                                                label="Số điện thoại"
+                                                fullWidth
+                                                autoComplete="tel"
+                                                variant="standard"
+                                                inputProps={{ type: "number" }}
+                                                sx={{
+                                                    '& input[type="number"]::-webkit-inner-spin-button':
+                                                        {
+                                                            "-webkit-appearance":
+                                                                "none",
+                                                            margin: 0,
+                                                        },
+                                                }}
+                                            />
+                                        </Grid>
                                         <Grid item xs={12}>
                                             <TextField
                                                 required
@@ -329,11 +391,7 @@ function BookingTablePage() {
                                     </Typography>
                                     <Grid item xs={12} sx={{ mb: "1rem" }}>
                                         <Typography variant="h6">
-                                            Tổng:{" "}
-                                            {isNaN(calculateTotalPrice())
-                                                ? 0
-                                                : calculateTotalPrice()}{" "}
-                                            đ
+                                            Tổng: {calculateTotalPrice()} đ
                                             <Divider />
                                         </Typography>
                                     </Grid>

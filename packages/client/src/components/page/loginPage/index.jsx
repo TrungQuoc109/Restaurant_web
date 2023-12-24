@@ -67,7 +67,7 @@ const LoginPage = () => {
                 setErrorMessage(errorData.message);
             }
         } catch (error) {
-            console.error("Error during login:", error);
+            console.error("Error during login");
             setErrorMessage("Internal Server Error");
         }
     };
