@@ -391,7 +391,7 @@ function BookingTablePage() {
                                     </Typography>
                                     <Grid item xs={12} sx={{ mb: "1rem" }}>
                                         <Typography variant="h6">
-                                            Tổng: {calculateTotalPrice()} đ
+                                            Tổng: ${calculateTotalPrice()} đ
                                             <Divider />
                                         </Typography>
                                     </Grid>
