@@ -20,7 +20,7 @@ import {
 import { useMenuContext } from "../../context/MenuContextProvider";
 
 const ProductModal = ({ open, onClose, handleAddProduct }) => {
-  const { products, productQuantities } = useMenuContext();
+  const { products } = useMenuContext();
 
   return (
     <Dialog open={open} onClose={onClose}>

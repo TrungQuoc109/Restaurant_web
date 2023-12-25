@@ -72,17 +72,6 @@ const InvoiceManagementPage = () => {
     setExpandedInvoiceId((prevId) => (prevId === id ? null : id));
   };
 
-  const handleDeleteDetail = (detailId, invoiceId) => {
-    const updatedDetails = [...takeoutOrderDetails[invoiceId]];
-    const filteredDetails = updatedDetails.filter(
-      (detail) => detail.id !== detailId
-    );
-    setTakeoutOrderDetails({
-      ...takeoutOrderDetails,
-      [invoiceId]: filteredDetails,
-    });
-  };
-
   const status = ["Đang chờ", "Đang xử lý", "Đang giao"];
   useEffect(() => {
     const fetchOrders = async () => {
@@ -119,8 +108,27 @@ const InvoiceManagementPage = () => {
     const updatedDetails = takeoutOrderDetails.filter(
       (detail) => detail.id !== detailId || detail.order_ID !== invoiceId
     );
-
     setTakeoutOrderDetails(updatedDetails);
+  };
+
+  const handleDeleteInvoice = (id) => {
+    setInvoices((prevInvoices) =>
+      prevInvoices.filter((invoice) => invoice.id !== id)
+    );
+  };
+
+  const handleSave = () => {
+    const updatedDetails = takeoutOrderDetails.filter(
+      (detail) => detail.order_ID === expandedInvoiceId
+    );
+
+    const updatedInvoice = invoices.find(
+      (invoice) => invoice.id === expandedInvoiceId
+    );
+
+    console.log("Updated Details:", updatedDetails);
+    console.log("Updated Invoice:", updatedInvoice);
+    setExpandedInvoiceId(null);
   };
 
   const [productModalOpen, setProductModalOpen] = useState(false);
@@ -154,10 +162,9 @@ const InvoiceManagementPage = () => {
     );
 
     if (existingDetailIndex !== -1) {
-      // If the product already exists in the order details, update its quantity
       const updatedDetails = [...takeoutOrderDetails];
       const existingDetail = updatedDetails[existingDetailIndex];
-      const updatedQuantity = existingDetail.quantity + 1; // Always increase quantity by 1
+      const updatedQuantity = existingDetail.quantity + 1;
       const updatedAmount = selectedProduct.price * updatedQuantity;
 
       updatedDetails[existingDetailIndex] = {
@@ -256,19 +263,18 @@ const InvoiceManagementPage = () => {
                       <Button
                         variant="outlined"
                         color="secondary"
-                        onClick={() => handleDelete(invoice.id)}
+                        onClick={() => handleDeleteInvoice(invoice.id)}
                       >
                         Delete
                       </Button>
-                      {invoice.status === 0 || invoice.status === 1 ? (
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          onClick={() => handleToggleExpansion(invoice.id)}
-                        >
-                          {expandedInvoiceId === invoice.id ? "Save" : "Edit"}
-                        </Button>
-                      ) : null}
+
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => handleToggleExpansion(invoice.id)}
+                      >
+                        {expandedInvoiceId === invoice.id ? "Hide" : "Edit"}
+                      </Button>
                     </TableCell>
                   </TableRow>
                   {expandedInvoiceId === invoice.id && (
@@ -278,7 +284,7 @@ const InvoiceManagementPage = () => {
                           <Grid item>
                             <Button
                               variant="outlined"
-                              color="primary"
+                              color="success"
                               onClick={() => handleOpenProductModal()}
                             >
                               Thêm món
@@ -289,6 +295,14 @@ const InvoiceManagementPage = () => {
                               handleAddProduct={handleAddProduct}
                               products={products}
                             />
+                            <Button
+                              variant="outlined"
+                              color="primary"
+                              sx={{ ml: 1 }}
+                              onClick={handleSave}
+                            >
+                              Save
+                            </Button>
                           </Grid>
                           <Table>
                             <TableHead>
