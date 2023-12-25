@@ -70,6 +70,8 @@ export class CustomerService {
                 status: 0,
                 shippingMethod: req.body.shippingMethod,
                 paymentType: req.body.paymentType,
+                shippingMethod: req.body.shippingMethod,
+                paymentType: req.body.paymentType,
             });
             const item_list = req.body.item;
             const detailsPromises = item_list.map(async (item) => {
@@ -189,6 +191,45 @@ export class CustomerService {
             console.log("Error: ", error);
             res.status(500).json({ message: "Internal Server Error" });
         }
+    }
+    async addItemtoReservation(req, res) {
+        const order_id = req.params.id;
+        const item_list = req.body.item;
+        if (!item_list || !Array.isArray(item_list) || item_list.length === 0) {
+            return res.status(200).json({
+                message: "Reservation successfully created.",
+                order: order,
+            });
+        }
+        const detailsPromises = item_list.map(async (item) => {
+            return ReservationOrderDetail.create({
+                item_id: item.id,
+                order_id: order_id,
+                quantity: item.quantity ?? 1,
+                note: item.item_note ?? "",
+            });
+        });
+        await Promise.all(detailsPromises);
+        const reservation_Oder = await Reservation.findOne({
+            where: { id: order_id },
+            raw: true,
+        });
+        reservation_Oder.order_date = moment(
+            reservation_Oder.order_date
+        ).format("DD/MM/YYYY HH:mm");
+        reservation_Oder.appointment_date = moment(
+            reservation_Oder.appointment_date
+        ).format("DD/MM/YYYY");
+        reservation_Oder.item_list = await ReservationOrderDetail.findAll({
+            attributes: ["item_id", "quantity", "note", "amount"],
+            where: {
+                order_id: reservation_Oder.id,
+            },
+        });
+        return res.status(200).json({
+            message: "Add food successfully",
+            order: reservation_Oder,
+        });
     }
 }
 

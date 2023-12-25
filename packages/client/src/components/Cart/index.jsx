@@ -23,7 +23,6 @@ function DrawerComponent({
     handleIncreaseQuantity,
     handleUpdateQuantity,
     calculateTotalPrice,
-    handleTabChange,
 }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
