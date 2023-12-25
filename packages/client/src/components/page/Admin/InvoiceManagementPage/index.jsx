@@ -30,41 +30,34 @@ const dummyTakeoutOrderDetails = [
     id: 1,
     order_ID: 9,
     item_ID: 1,
-    quaity: 1,
+    quantity: 1,
     amount: 398000.0,
-    note: "Chú thích của món 1",
   },
   {
     id: 2,
     order_ID: 9,
     item_ID: 2,
-    quaity: 2,
+    quantity: 2,
     amount: 796000.0,
   },
   {
     id: 3,
     order_ID: 9,
     item_ID: 3,
-    quaity: 3,
+    quantity: 3,
     amount: 1800000.0,
   },
   {
     id: 4,
     order_ID: 10,
     item_ID: 3,
-    quaity: 3,
+    quantity: 3,
     amount: 1800000.0,
   },
 ];
 
 const InvoiceManagementPage = () => {
-  const {
-    products,
-    handleIncreaseQuantityAdminMenu,
-    handleUpdateQuantityAdmin,
-    handleDecreaseQuantityAdmin,
-    productQuantities,
-  } = useMenuContext();
+  const { products } = useMenuContext();
   const [invoices, setInvoices] = useState([]);
   const token = localStorage.getItem("jwtToken");
   const navigate = useNavigate();
@@ -91,7 +84,6 @@ const InvoiceManagementPage = () => {
   };
 
   const status = ["Đang chờ", "Đang xử lý", "Đang giao"];
-  const orderTypes = ["takeout", "reservation"];
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -123,11 +115,14 @@ const InvoiceManagementPage = () => {
     }
   }, []);
 
-  const handleDelete = (id) => {
-    setInvoices((prevInvoices) =>
-      prevInvoices.filter((invoice) => invoice.id !== id)
+  const handleDelete = (detailId, invoiceId) => {
+    const updatedDetails = takeoutOrderDetails.filter(
+      (detail) => detail.id !== detailId || detail.order_ID !== invoiceId
     );
+
+    setTakeoutOrderDetails(updatedDetails);
   };
+
   const [productModalOpen, setProductModalOpen] = useState(false);
 
   const handleOpenProductModal = () => {
@@ -150,20 +145,8 @@ const InvoiceManagementPage = () => {
     setInvoices(updatedInvoices);
   };
 
-  const handleTypeChange = (event, invoiceId) => {
-    const selectedType = event.target.value;
-    const updatedInvoices = invoices.map((invoice) =>
-      invoice.id === invoiceId
-        ? { ...invoice, order_type: selectedType }
-        : invoice
-    );
-    setInvoices(updatedInvoices);
-  };
-
   const handleAddProduct = (productId) => {
     const selectedProduct = products[productId];
-    const selectedQuantity = productQuantities[productId];
-
     const existingDetailIndex = takeoutOrderDetails.findIndex(
       (detail) =>
         detail.order_ID === expandedInvoiceId &&
@@ -171,9 +154,10 @@ const InvoiceManagementPage = () => {
     );
 
     if (existingDetailIndex !== -1) {
+      // If the product already exists in the order details, update its quantity
       const updatedDetails = [...takeoutOrderDetails];
       const existingDetail = updatedDetails[existingDetailIndex];
-      const updatedQuantity = existingDetail.quantity + selectedQuantity;
+      const updatedQuantity = existingDetail.quantity + 1; // Always increase quantity by 1
       const updatedAmount = selectedProduct.price * updatedQuantity;
 
       updatedDetails[existingDetailIndex] = {
@@ -188,17 +172,35 @@ const InvoiceManagementPage = () => {
         id: takeoutOrderDetails.length + 1,
         order_ID: expandedInvoiceId,
         item_ID: selectedProduct.id,
-        quantity: selectedQuantity,
-        amount: selectedProduct.price * selectedQuantity,
+        quantity: 1,
+        amount: selectedProduct.price,
       };
 
       setTakeoutOrderDetails([...takeoutOrderDetails, newDetail]);
     }
 
     handleCloseProductModal();
-    console.log("Added product:", newDetail);
   };
 
+  const handleQuantityChange = (detailId, action) => {
+    const updatedDetails = takeoutOrderDetails.map((detail) => {
+      if (detail.id === detailId) {
+        let updatedQuantity = detail.quantity;
+        if (action === "increase") {
+          updatedQuantity += 1;
+        } else if (action === "decrease" && updatedQuantity > 1) {
+          updatedQuantity -= 1;
+        }
+        return {
+          ...detail,
+          quantity: updatedQuantity,
+        };
+      }
+      return detail;
+    });
+
+    setTakeoutOrderDetails(updatedDetails);
+  };
   //
 
   return (
@@ -249,24 +251,7 @@ const InvoiceManagementPage = () => {
                         status[invoice.status]
                       )}
                     </TableCell>
-                    <TableCell>
-                      <TableCell>
-                        {expandedInvoiceId === invoice.id ? (
-                          <Select
-                            value={invoice.order_type}
-                            onChange={(e) => handleTypeChange(e, invoice.id)}
-                          >
-                            {orderTypes.map((type, index) => (
-                              <MenuItem key={index} value={type}>
-                                {type}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        ) : (
-                          invoice.order_type
-                        )}
-                      </TableCell>
-                    </TableCell>
+                    <TableCell>{invoice.order_type}</TableCell>
                     <TableCell>
                       <Button
                         variant="outlined"
@@ -303,15 +288,6 @@ const InvoiceManagementPage = () => {
                               onClose={handleCloseProductModal}
                               handleAddProduct={handleAddProduct}
                               products={products}
-                              handleIncreaseQuantityAdminMenu={
-                                handleIncreaseQuantityAdminMenu
-                              }
-                              handleUpdateQuantityAdmin={
-                                handleUpdateQuantityAdmin
-                              }
-                              handleDecreaseQuantityAdmin={
-                                handleDecreaseQuantityAdmin
-                              }
                             />
                           </Grid>
                           <Table>
@@ -333,7 +309,67 @@ const InvoiceManagementPage = () => {
                                 .map((detail) => (
                                   <TableRow key={detail.id}>
                                     <TableCell>{detail.item_ID}</TableCell>
-                                    <TableCell>{detail.quantity}</TableCell>
+                                    <TableCell>
+                                      <Grid
+                                        container
+                                        spacing={2}
+                                        alignItems="center"
+                                      >
+                                        <Grid item>
+                                          <IconButton
+                                            onClick={() =>
+                                              handleQuantityChange(
+                                                detail.id,
+                                                "decrease"
+                                              )
+                                            }
+                                            color="primary"
+                                          >
+                                            -
+                                          </IconButton>
+                                        </Grid>
+                                        <Grid item>
+                                          <TextField
+                                            type="number"
+                                            value={detail.quantity}
+                                            onChange={(e) =>
+                                              handleQuantityChange(e, detail.id)
+                                            }
+                                            sx={{
+                                              width: "5rem",
+                                              height: "1.875rem",
+                                              mx: "0.5rem",
+                                              "& input[type='number']": {
+                                                width: "100%",
+                                                height: "100%",
+                                                padding: "0.5rem",
+                                                borderRadius: "0",
+                                                "&::-webkit-inner-spin-button":
+                                                  {
+                                                    "-webkit-appearance":
+                                                      "none",
+                                                    margin: 0,
+                                                  },
+                                              },
+                                            }}
+                                          />
+                                        </Grid>
+                                        <Grid item>
+                                          {" "}
+                                          <IconButton
+                                            onClick={() =>
+                                              handleQuantityChange(
+                                                detail.id,
+                                                "increase"
+                                              )
+                                            }
+                                            color="primary"
+                                          >
+                                            +
+                                          </IconButton>
+                                        </Grid>
+                                      </Grid>
+                                    </TableCell>
                                     <TableCell>
                                       {new Intl.NumberFormat("vi-VN", {
                                         style: "currency",
@@ -345,7 +381,7 @@ const InvoiceManagementPage = () => {
                                         variant="outlined"
                                         color="secondary"
                                         onClick={() =>
-                                          handleDeleteDetail(
+                                          handleDelete(
                                             detail.id,
                                             expandedInvoiceId
                                           )

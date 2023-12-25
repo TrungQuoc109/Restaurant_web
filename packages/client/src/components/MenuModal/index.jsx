@@ -19,14 +19,7 @@ import {
 } from "@mui/material";
 import { useMenuContext } from "../../context/MenuContextProvider";
 
-const ProductModal = ({
-  open,
-  onClose,
-  handleAddProduct,
-  handleIncreaseQuantityAdminMenu,
-  handleUpdateQuantityAdmin,
-  handleDecreaseQuantityAdmin,
-}) => {
+const ProductModal = ({ open, onClose, handleAddProduct }) => {
   const { products, productQuantities } = useMenuContext();
 
   return (
@@ -34,14 +27,13 @@ const ProductModal = ({
       <DialogTitle>Menu</DialogTitle>
       <DialogContent>
         <Grid container spacing={2}>
-          <Grid item xs={6}>
+          <Grid item xs={20}>
             <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>ID</TableCell>
                   <TableCell>Tên món</TableCell>
                   <TableCell>Giá</TableCell>
-                  <TableCell>Số lượng</TableCell>
                   <TableCell>Action</TableCell>
                 </TableRow>
               </TableHead>
@@ -55,56 +47,6 @@ const ProductModal = ({
                         style: "currency",
                         currency: "VND",
                       }).format(product.price)}
-                    </TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                      >
-                        <IconButton
-                          onClick={() => handleDecreaseQuantityAdmin(index)}
-                          sx={{ flex: "none" }}
-                        >
-                          -
-                        </IconButton>
-                        <TextField
-                          type="number"
-                          value={productQuantities[index]}
-                          sx={{
-                            width: "5rem",
-                            height: "1.875rem",
-                            mx: "0.5rem",
-                            "& input[type='number']": {
-                              width: "100%",
-                              height: "100%",
-                              padding: "0.5rem",
-                              borderRadius: "0",
-                              "&::-webkit-inner-spin-button": {
-                                "-webkit-appearance": "none",
-                                margin: 0,
-                              },
-                            },
-                          }}
-                          onChange={(event) => {
-                            const newQuantity = parseInt(
-                              event.target.value,
-                              10
-                            );
-                            if (!isNaN(newQuantity)) {
-                              handleUpdateQuantityAdmin(index, newQuantity);
-                            }
-                          }}
-                        />
-                        <IconButton
-                          onClick={() => handleIncreaseQuantityAdminMenu(index)}
-                          sx={{ flex: "none" }}
-                        >
-                          +
-                        </IconButton>
-                      </Typography>
                     </TableCell>
                     <TableCell>
                       <Button
