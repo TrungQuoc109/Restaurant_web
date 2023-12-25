@@ -260,11 +260,45 @@ export class orderService {
     }
     async updateOrder(req, res) {
         try {
+            const orderId = req.params.id;
+            const type = req.params.type;
+
+            // Lấy thông tin đơn đặt hàng cần cập nhật
+            const existingOrder =
+                type === "takeout"
+                    ? await TakeOutOrder.findByPk(orderId)
+                    : await Reservation.findByPk(orderId);
+
+            if (!existingOrder) {
+                return res.status(404).json({ message: "Order not found" });
+            }
+
+            // Cập nhật thông tin đơn đặt hàng
+            if (type === "takeout") {
+                // Cập nhật thông tin đơn đặt hàng mang đi
+                await existingOrder.update({
+                    // Cập nhật các trường thông tin cần thiết
+                    // Ví dụ: existingOrder.address = req.body.address;
+                    // Nếu có các trường cần cập nhật, bạn thêm vào đây
+                });
+            } else {
+                // Cập nhật thông tin đơn đặt hàng đặt bàn
+                await existingOrder.update({
+                    // Cập nhật các trường thông tin cần thiết
+                    // Ví dụ: existingOrder.appointment_date = req.body.appointment_date;
+                    // Nếu có các trường cần cập nhật, bạn thêm vào đây
+                });
+            }
+
+            return res
+                .status(200)
+                .json({ message: "Order updated successfully" });
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: "Internal Server Error" });
         }
     }
+
     async deleteOrder(req, res) {
         try {
             const orderId = req.params.id;

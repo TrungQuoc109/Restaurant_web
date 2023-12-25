@@ -8,13 +8,13 @@ orderRoute.get("/:id", checkAuth, orderControllerInstance.getOrderOfCustomer);
 orderRoute.get(
     "/:id/takeout",
     checkAuth,
-    checkAdmin,
+
     orderControllerInstance.getTakeOutOrderDetail
 );
 orderRoute.get(
     "/:id/reservation",
     checkAuth,
-    checkAdmin,
+
     orderControllerInstance.getReservationOrderDetail
 );
 orderRoute.delete("/:id/:type", checkAuth, orderControllerInstance.deleteOrder);

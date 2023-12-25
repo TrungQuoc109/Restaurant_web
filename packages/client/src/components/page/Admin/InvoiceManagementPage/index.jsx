@@ -22,6 +22,7 @@ import {
 } from "@mui/material";
 import AdminPage from "../adminNav";
 import * as jwt_decode from "jwt-decode";
+import { useMenuContext } from "../../../../context/MenuContextProvider";
 
 const InvoiceManagementPage = () => {
     const {
@@ -37,9 +38,7 @@ const InvoiceManagementPage = () => {
     const [expandedInvoiceId, setExpandedInvoiceId] = useState(null);
 
     //dummy
-    const [takeoutOrderDetails, setTakeoutOrderDetails] = useState(
-        dummyTakeoutOrderDetails
-    );
+    const [takeoutOrderDetails, setTakeoutOrderDetails] = useState();
 
     const handleToggleExpansion = (id) => {
         setExpandedInvoiceId((prevId) => (prevId === id ? null : id));
@@ -92,10 +91,27 @@ const InvoiceManagementPage = () => {
         }
     }, []);
 
-    const handleDelete = (id) => {
+    const handleDelete = async (id, type) => {
         setInvoices((prevInvoices) =>
             prevInvoices.filter((invoice) => invoice.id !== id)
         );
+        try {
+            const response = await fetch(
+                `http://localhost:8080/order/${id}/${type}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            if (!response.ok) {
+                const data = await response.json();
+                console.log(data);
+            }
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
     };
     const [productModalOpen, setProductModalOpen] = useState(false);
 
@@ -267,7 +283,10 @@ const InvoiceManagementPage = () => {
                                                 variant="outlined"
                                                 color="secondary"
                                                 onClick={() =>
-                                                    handleDelete(invoice.id)
+                                                    handleDelete(
+                                                        invoice.id,
+                                                        invoice.order_type
+                                                    )
                                                 }
                                             >
                                                 Delete

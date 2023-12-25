@@ -75,7 +75,7 @@ function CheckoutPage() {
                         body: JSON.stringify(checkoutData),
                     }
                 );
-                console.log(checkoutData);
+
                 const data = await response.json();
                 console.log(data);
                 setErrorMessage(data.message);

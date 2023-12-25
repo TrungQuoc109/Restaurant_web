@@ -2,7 +2,6 @@ import { Router } from "express";
 import {
     menuControllerInstance,
     orderControllerInstance,
-    orderControllerInstance,
     tableControllerInstance,
 } from "../controller/index.js";
 import multer from "multer";
