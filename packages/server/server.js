@@ -14,13 +14,13 @@ const app = express();
 app.use(cors());
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(bodyParser.json({ limit: "50mb" }));
 app.use(urlencoded({ extended: true }));
 app.use(express.json());
 route(app);
 
 app.listen(PORT, () => {
-  console.log(
-    `⚡️[Restaurant_web]: Server is running at http://localhost:${PORT}`
-  );
+    console.log(
+        `⚡️[Restaurant_web]: Server is running at http://localhost:${PORT}`
+    );
 });

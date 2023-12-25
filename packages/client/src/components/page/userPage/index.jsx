@@ -14,10 +14,10 @@ import {
 } from "@mui/material";
 import ResponsiveAppBar from "../../nav-bar";
 import Footer from "../../footer";
-import { useMenuContext } from "../../../context/MenuContextProvider";
+
 function UserPage() {
-    const { isLoggedIn, handleLogout } = useMenuContext();
     const [userData, setUserData] = useState({
+        id: "",
         username: "",
         phone: "",
     });
@@ -26,51 +26,48 @@ function UserPage() {
     const token = localStorage.getItem("jwtToken");
     const status = ["Đang chờ", "Đang xử lý", "Đang giao"];
     useEffect(() => {
-        // Gọi API để lấy thông tin người dùng và đơn hàng
         const fetchUserData = async () => {
             try {
-                const response = await fetch(
-                    "http://localhost:8080/customer/",
-                    {
-                        method: "GET",
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setUserData({
-                        username: data.name,
-                        phone: data.phone,
-                    });
-                }
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-            }
-        };
-        const fetchUserOrders = async () => {
-            try {
-                const response = await fetch("http://localhost:8080/order/", {
+                const response = await fetch("http://localhost:8080/customer", {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
+
                 if (response.ok) {
                     const data = await response.json();
-                    setUserOrders(data);
-                } else {
-                    console.error("Error fetching user orders");
+                    setUserData({
+                        id: data.id,
+                        username: data.name,
+                        phone: data.phone,
+                    });
+                    try {
+                        const response = await fetch(
+                            `http://localhost:8080/order/${data.id}`,
+                            {
+                                method: "GET",
+                                headers: {
+                                    Authorization: `Bearer ${token}`,
+                                },
+                            }
+                        );
+                        if (response.ok) {
+                            const data = await response.json();
+                            setUserOrders(data);
+                        } else {
+                            console.error("Error fetching user orders");
+                        }
+                    } catch (error) {
+                        console.error("Error fetching user orders:");
+                    }
                 }
             } catch (error) {
-                console.error("Error fetching user orders:");
+                console.error("Error fetching user data:", error);
             }
         };
 
         fetchUserData();
-        fetchUserOrders();
     }, []);
 
     return (
@@ -106,7 +103,6 @@ function UserPage() {
                                     variant="contained"
                                     color="primary"
                                     onClick={() => {
-                                        handleLogout();
                                         window.location.href = "/login";
                                     }}
                                 >
@@ -121,25 +117,27 @@ function UserPage() {
                                 Theo dõi Đơn hàng
                             </Typography>
                             <Divider />
-                            <List>
-                                {userOrders.map((order) => (
-                                    <ListItem key={order.id}>
-                                        <ListItemText
-                                            primary={`Đơn hàng #${order.id} | Ngày đặt: ${order.order_date}`}
-                                            secondary={`Trạng thái: ${
-                                                status[order.status]
-                                            }`}
-                                        />
-                                        <Button
-                                            variant="outlined"
-                                            component={Link}
-                                            to={`/order/${order.id}/${order.order_type}`}
-                                        >
-                                            Xem chi tiết
-                                        </Button>
-                                    </ListItem>
-                                ))}
-                            </List>
+                            {userOrders && (
+                                <List>
+                                    {userOrders.map((order) => (
+                                        <ListItem key={order.id}>
+                                            <ListItemText
+                                                primary={`Đơn hàng #${order.id} | Ngày đặt: ${order.order_date}`}
+                                                secondary={`Trạng thái: ${
+                                                    status[order.status]
+                                                }`}
+                                            />
+                                            <Button
+                                                variant="outlined"
+                                                component={Link}
+                                                to={`/order/${order.id}/${order.order_type}`}
+                                            >
+                                                Xem chi tiết
+                                            </Button>
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            )}
                         </Box>
                     </Grid>
                 </Grid>

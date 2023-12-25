@@ -265,5 +265,25 @@ export class orderService {
             res.status(500).json({ message: "Internal Server Error" });
         }
     }
+    async deleteOrder(req, res) {
+        try {
+            const orderId = req.params.id;
+            const type = req.params.type;
+
+            const existingorder =
+                type == "takeout"
+                    ? await TakeOutOrder.findByPk(orderId)
+                    : await Reservation.findByPk(orderId);
+
+            if (!existingorder) {
+                return res.status(404).json({ message: "order not found" });
+            }
+            await existingorder.destroy();
+            return res.status(200);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: "Internal Server Error" });
+        }
+    }
 }
 export const orderServiceInstance = orderService.getInstance();

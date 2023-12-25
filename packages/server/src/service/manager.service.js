@@ -1,4 +1,4 @@
-import { Employee } from "../model/index.model.js";
+import { Customer, Employee } from "../model/index.model.js";
 export class ManagerService {
     static instance;
     static getInstance() {
@@ -140,6 +140,37 @@ export class ManagerService {
             return res
                 .status(200)
                 .json({ message: "Employee deleted successfully" });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+    }
+    async getCustomer(req, res) {
+        try {
+            const customer = await Customer.findAll({
+                raw: true,
+            });
+            if (!customer)
+                return res.status(404).json({ message: "customer not found" });
+            return res.status(200).json(customer);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: "Internal Server Error" });
+        }
+    }
+    async deleteCustomer(req, res) {
+        const id = req.params.id;
+
+        try {
+            const existingCustomer = await Customer.findByPk(id);
+
+            if (!existingCustomer) {
+                return res.status(404).json({ message: "Customer not found" });
+            }
+            await existingCustomer.destroy();
+            return res
+                .status(200)
+                .json({ message: "Customer deleted successfully" });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ message: "Internal Server Error" });

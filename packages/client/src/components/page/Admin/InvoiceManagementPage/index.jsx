@@ -55,10 +55,26 @@ const InvoiceManagementPage = () => {
         } else navigate("/");
     }, []);
 
-    const handleDelete = (id) => {
-        setInvoices((prevInvoices) =>
-            prevInvoices.filter((invoice) => invoice.id !== id)
-        );
+    const handleDelete = async (id, type) => {
+        try {
+            setInvoices((prevInvoices) =>
+                prevInvoices.filter((invoice) => invoice.id !== id)
+            );
+            const response = await fetch(
+                `http://localhost:8080/order/${id}/${type}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            if (!response.ok) {
+                throw new Error(`HTTP error!`);
+            }
+        } catch (error) {
+            console.error("Error fetching orders:");
+        }
     };
 
     return (
@@ -114,7 +130,10 @@ const InvoiceManagementPage = () => {
                                             variant="outlined"
                                             color="secondary"
                                             onClick={() =>
-                                                handleDelete(invoice.id)
+                                                handleDelete(
+                                                    invoice.id,
+                                                    invoice.order_type
+                                                )
                                             }
                                         >
                                             Delete

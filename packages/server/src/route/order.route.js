@@ -4,12 +4,7 @@ import { checkAdmin, checkAuth } from "../middleware/checkAccount.js";
 
 const orderRoute = Router();
 orderRoute.get("/", checkAuth, orderControllerInstance.getOrder);
-orderRoute.get(
-    "/:id",
-    checkAuth,
-    checkAdmin,
-    orderControllerInstance.getOrderOfCustomer
-);
+orderRoute.get("/:id", checkAuth, orderControllerInstance.getOrderOfCustomer);
 orderRoute.get(
     "/:id/takeout",
     checkAuth,
@@ -22,5 +17,5 @@ orderRoute.get(
     checkAdmin,
     orderControllerInstance.getReservationOrderDetail
 );
-
+orderRoute.delete("/:id/:type", checkAuth, orderControllerInstance.deleteOrder);
 export default orderRoute;

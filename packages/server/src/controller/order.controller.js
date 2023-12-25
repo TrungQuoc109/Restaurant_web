@@ -23,5 +23,8 @@ export class OrderController {
     async getOrderByAdmin(req, res) {
         return await orderServiceInstance.getOrderByAdmin(req, res);
     }
+    async deleteOrder(req, res) {
+        return await orderServiceInstance.deleteOrder(req, res);
+    }
 }
 export const orderControllerInstance = OrderController.getInstance();

@@ -8,7 +8,13 @@ import multer from "multer";
 import { checkAdmin, checkAuth } from "../middleware/checkAccount.js";
 import { managerControllerInstance } from "../controller/manager.controller.js";
 import { isInfoEmployee } from "../middleware/invalidInfo.js";
-const upload = multer();
+const storage = multer.memoryStorage(); // Lưu trữ file trong bộ nhớ
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 1024 * 1024, // Giới hạn kích thước tệp (đơn vị: byte)
+    },
+});
 const adminRoute = Router();
 adminRoute.post(
     "/addtable",
@@ -59,13 +65,32 @@ adminRoute.delete(
     "/deleteEmployee/:id",
     checkAuth,
     checkAdmin,
-    //isInfoEmployee,
     managerControllerInstance.deleteEmployee
 );
+adminRoute.get(
+    "/getCustomer",
+    checkAuth,
+    checkAdmin,
+    managerControllerInstance.getCustomer
+);
+adminRoute.delete(
+    "/deleteCustomer/:id",
+    checkAuth,
+    checkAdmin,
+    managerControllerInstance.deleteCustomer
+);
+
 adminRoute.get(
     "/orders",
     checkAuth,
     checkAdmin,
     orderControllerInstance.getOrderByAdmin
+);
+adminRoute.post(
+    "/additem",
+    checkAuth,
+    checkAdmin,
+    upload.single("image"),
+    menuControllerInstance.addItem
 );
 export default adminRoute;
