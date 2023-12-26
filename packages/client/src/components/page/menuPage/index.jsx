@@ -75,7 +75,14 @@ function Menupage() {
         textDecoration: "none",
         ml: 2,
     };
-
+    const cardStyle = {
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+    };
+    const newcolor = {
+        color: "red",
+    };
     return (
         <Grid>
             <ResponsiveAppBar />
@@ -116,15 +123,15 @@ function Menupage() {
                 ) : (
                     <Grid container spacing={3} marginTop={1}>
                         {currentProducts.map((product) => (
-                            <Grid item xs={12} sm={6} md={4} key={product.id}>
+                            <Grid item xs={12} md={4} key={product.id}>
                                 <Link
                                     to={`/product/${product.id}`}
                                     style={linkStyle}
                                 >
-                                    <Card>
+                                    <Card style={cardStyle}>
                                         <CardMedia
                                             component="img"
-                                            height="300"
+                                            height="250"
                                             src={`data:image/png;base64, ${product.image}`}
                                             alt={product.name}
                                             loading="lazy"
@@ -134,6 +141,7 @@ function Menupage() {
                                             <Typography
                                                 variant="h6"
                                                 component="div"
+                                                style={newcolor}
                                             >
                                                 {product.name}
                                             </Typography>

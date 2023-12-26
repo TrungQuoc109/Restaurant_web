@@ -1,14 +1,14 @@
 import moment from "moment";
 const checkReservationOrder = (req, res, next) => {
-    const { appointment_date, appointment_time, number_of_guests, note } =
+    const { appointment_date, appointment_time, number_of_guests, item } =
         req.body;
     console.log(req.body);
     const customer_ID = req.account.user_id;
 
     if (!appointment_date) {
-        return res
-            .status(400)
-            .json({ message: "Missing or invalid appointment_date." });
+        return res.status(400).json({
+            message: "Missing or invalid appointment_date.",
+        });
     }
 
     if (!appointment_time) {
@@ -21,6 +21,11 @@ const checkReservationOrder = (req, res, next) => {
         return res
             .status(400)
             .json({ message: "Missing or invalid customer_ID." });
+    }
+    if (item.some((element) => element.quantity > 10)) {
+        return res.status(400).json({
+            message: "so luong qua nhieu.",
+        });
     }
 
     if (!number_of_guests) {

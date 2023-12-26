@@ -161,26 +161,6 @@ export const MenuContextProvider = ({ children }) => {
         Array(products.length).fill(1)
     );
 
-    const handleIncreaseQuantityAdminMenu = (index) => {
-        const newQuantities = [...productQuantities];
-        newQuantities[index] = productQuantities[index] + 1;
-        setProductQuantities(newQuantities);
-    };
-
-    const handleUpdateQuantityAdmin = (index, newQuantity) => {
-        const newQuantities = [...productQuantities];
-        newQuantities[index] = newQuantity;
-        setProductQuantities(newQuantities);
-    };
-
-    const handleDecreaseQuantityAdmin = (index) => {
-        if (productQuantities[index] > 1) {
-            const newQuantities = [...productQuantities];
-            newQuantities[index] = productQuantities[index] - 1;
-            setProductQuantities(newQuantities);
-        }
-    };
-
     const contextValue = {
         products,
         product,
@@ -195,9 +175,6 @@ export const MenuContextProvider = ({ children }) => {
         selectedTab,
         productQuantities,
         setProductQuantities,
-        handleDecreaseQuantityAdmin,
-        handleIncreaseQuantityAdminMenu,
-        handleUpdateQuantityAdmin,
         setSelectedTab,
         handleTabChange,
         setIsLoggedIn,

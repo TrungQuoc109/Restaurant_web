@@ -77,8 +77,11 @@ function CheckoutPage() {
                 );
 
                 const data = await response.json();
-                console.log(data);
-                setErrorMessage(data.message);
+
+                setErrorMessage({
+                    status: response.status,
+                    message: data.message,
+                });
             } catch (error) {
                 console.error("Error fetching check out", error);
             }
@@ -419,19 +422,19 @@ function CheckoutPage() {
                         </Grid>
                     </Grid>
                 </form>
-                {errorMessage && errorMessage !== "successful" && (
+                {errorMessage && errorMessage.status !== 200 && (
                     <Typography variant="body2" color="error" align="center">
-                        {errorMessage}
+                        {errorMessage.message}
                     </Typography>
                 )}
-                {errorMessage === "successful" && (
+                {errorMessage && errorMessage.status === 200 && (
                     <Typography
                         variant="body2"
                         color="primary"
                         align="center"
                         style={{ color: "green" }}
                     >
-                        {errorMessage}
+                        {"Đặt món thành công"}
                     </Typography>
                 )}
             </Container>

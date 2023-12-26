@@ -14,6 +14,7 @@ import OrderDetail from "./components/page/orderDetailPage";
 import ProductManagementPage from "./components/page/Admin/productManagementPage";
 import InvoiceManagementPage from "./components/page/Admin/InvoiceManagementPage";
 import UserManagementPage from "./components/page/Admin/UserManagementPage";
+import Newpage from "./components/page/new";
 import { MenuContextProvider } from "./context/MenuContextProvider";
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
                 <Route path="/aboutus" element={<AboutUsPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/userpage" element={<UserPage />} />
+                <Route path="/newpage" element={<Newpage />} />
                 <Route path="/order/:orderId/:type" element={<OrderDetail />} />
                 <Route
                     path="/ProductManagementPage"

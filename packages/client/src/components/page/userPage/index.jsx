@@ -55,6 +55,7 @@ function UserPage() {
                         if (response.ok) {
                             const data = await response.json();
                             setUserOrders(data);
+                            // console.log(data);
                         } else {
                             console.error("Error fetching user orders");
                         }
@@ -69,7 +70,31 @@ function UserPage() {
 
         fetchUserData();
     }, []);
+    const handleDeleteOrder = async (orderId, type) => {
+        try {
+            const response = await fetch(
+                `http://localhost:8080/order/${orderId}/${type}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
+            if (response.ok) {
+                // Filter out the deleted order from the userOrders state
+                setUserOrders((prevOrders) =>
+                    prevOrders.filter((order) => order.id !== orderId)
+                );
+                // console.log(Order with ID ${orderId} deleted successfully.);
+            } else {
+                console.error(`Failed to delete order with ID ${orderId}.`);
+            }
+        } catch (error) {
+            console.error(`Error deleting order with ID ${orderId}:`, error);
+        }
+    };
     return (
         <Grid>
             <ResponsiveAppBar />
@@ -133,6 +158,19 @@ function UserPage() {
                                                 to={`/order/${order.id}/${order.order_type}`}
                                             >
                                                 Xem chi tiết
+                                            </Button>
+                                            <Button
+                                                variant="outlined"
+                                                color="error"
+                                                sx={{ ml: 1 }}
+                                                onClick={() =>
+                                                    handleDeleteOrder(
+                                                        order.id,
+                                                        order.order_type
+                                                    )
+                                                }
+                                            >
+                                                Xóa đơn
                                             </Button>
                                         </ListItem>
                                     ))}

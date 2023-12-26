@@ -7,6 +7,7 @@ import {
     ReservationOrderDetail,
     TakeOutOrderDetail,
 } from "../model/index.model.js";
+import { sequelize } from "../database/db_connetion.js";
 
 export class orderService {
     static instance;
@@ -137,12 +138,12 @@ export class orderService {
                     .status(404)
                     .json({ message: " Takeout order not found" });
             }
-            //  console.log(order_detail.order_date);
+            console.log(order_detail.order_date);
             order_detail.order_date = moment(order_detail.order_date).format(
                 "DD/MM/YYYY HH:mm"
             );
             order_detail.detail = await TakeOutOrderDetail.findAll({
-                attributes: ["quantity", "note", "amount"],
+                attributes: ["quantity", "note", "amount", "order_id"],
                 where: { order_id: id },
                 include: {
                     model: Item,
@@ -185,7 +186,7 @@ export class orderService {
                 order_detail.appointment_date
             ).format("DD/MM/YYYY");
             order_detail.detail = await ReservationOrderDetail.findAll({
-                attributes: ["quantity", "note", "amount"],
+                // attributes: ["quantity", "note", "amount", "order_id"],
                 where: { order_id: id },
                 include: {
                     model: Item,
@@ -259,11 +260,18 @@ export class orderService {
         }
     }
     async updateOrder(req, res) {
+        // const t = await sequelize.transaction();
         try {
             const orderId = req.params.id;
             const type = req.params.type;
 
-            // Lấy thông tin đơn đặt hàng cần cập nhật
+            // Validate input data
+            const { status, item } = req.body;
+            if (!status) {
+                return res.status(400).json({ message: "Status is required" });
+            }
+
+            // Get existing order
             const existingOrder =
                 type === "takeout"
                     ? await TakeOutOrder.findByPk(orderId)
@@ -273,29 +281,51 @@ export class orderService {
                 return res.status(404).json({ message: "Order not found" });
             }
 
-            // Cập nhật thông tin đơn đặt hàng
-            if (type === "takeout") {
-                // Cập nhật thông tin đơn đặt hàng mang đi
-                await existingOrder.update({
-                    // Cập nhật các trường thông tin cần thiết
-                    // Ví dụ: existingOrder.address = req.body.address;
-                    // Nếu có các trường cần cập nhật, bạn thêm vào đây
-                });
-            } else {
-                // Cập nhật thông tin đơn đặt hàng đặt bàn
-                await existingOrder.update({
-                    // Cập nhật các trường thông tin cần thiết
-                    // Ví dụ: existingOrder.appointment_date = req.body.appointment_date;
-                    // Nếu có các trường cần cập nhật, bạn thêm vào đây
-                });
+            // Update order status
+            await existingOrder.update({ status });
+            if (!item) {
+                return res
+                    .status(200)
+                    .json({ message: "Update Status successfully" });
+            }
+
+            const ModelDetail =
+                type === "takeout"
+                    ? TakeOutOrderDetail
+                    : ReservationOrderDetail;
+            await ModelDetail.destroy({
+                where: {
+                    order_ID: orderId,
+                    item_ID: {
+                        [sequelize.Op.notIn]: item.map((el) => el.Item.id),
+                    },
+                },
+            });
+
+            for (const element of item_list) {
+                try {
+                    const existingRecord = await ModelDetail.findOne({
+                        where: { order_id: orderId, item_id: element.Item.id },
+                    });
+
+                    if (existingRecord) {
+                        await existingRecord.update(element);
+                    } else {
+                        await ModelDetail.create(element);
+                    }
+                } catch (error) {
+                    console.error("Error while updating database:", error);
+                    return res
+                        .status(500)
+                        .json({ message: "Internal Server Error" });
+                }
             }
 
             return res
                 .status(200)
                 .json({ message: "Order updated successfully" });
         } catch (error) {
-            console.log(error);
-            res.status(500).json({ message: "Internal Server Error" });
+            res.status(500).json({ message: `Internal Server Error ${error}` });
         }
     }
 
@@ -312,8 +342,12 @@ export class orderService {
             if (!existingorder) {
                 return res.status(404).json({ message: "order not found" });
             }
+            if (existingorder.status !== 0)
+                return res
+                    .status(400)
+                    .json({ message: "Đơn hàng quá thời gian huỷ" });
             await existingorder.destroy();
-            return res.status(200);
+            return res.status(200).json({ message: "Huỷ đơn thành công" });
         } catch (error) {
             console.log(error);
             res.status(500).json({ message: "Internal Server Error" });

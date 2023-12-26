@@ -55,10 +55,27 @@ const ProductManagementPage = () => {
         setOpenDialog(false);
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = async (id) => {
         setProducts((prevProducts) =>
             prevProducts.filter((product) => product.id !== id)
         );
+        try {
+            const response = await fetch(
+                `http://localhost:8080/order/${id}/${type}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            if (!response.ok) {
+                const data = await response.json();
+                console.log(data);
+            }
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
     };
 
     const handleOpenAddProductDialog = () => {

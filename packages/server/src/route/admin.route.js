@@ -93,4 +93,10 @@ adminRoute.post(
     upload.single("image"),
     menuControllerInstance.addItem
 );
+adminRoute.post(
+    "/updateorder/:id/:type",
+    checkAuth,
+    checkAdmin,
+    managerControllerInstance.updateOrder
+);
 export default adminRoute;

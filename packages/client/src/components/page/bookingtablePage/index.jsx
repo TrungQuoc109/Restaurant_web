@@ -44,18 +44,19 @@ function BookingTablePage() {
             [name]: value,
         });
     };
+    const [detail, setDetail] = useState({});
     const token = localStorage.getItem("jwtToken");
     const [errorMessage, setErrorMessage] = useState(null);
     const handleSubmit = (event) => {
         event.preventDefault();
-        const detail = selectedTab
-            ? {
+        selectedTab
+            ? setDetail({
                   ...formData,
                   item: orderedProducts,
-              }
-            : {
+              })
+            : setDetail({
                   ...formData,
-              };
+              });
         const fetchReservationOrder = async () => {
             try {
                 const response = await fetch(

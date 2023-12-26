@@ -103,7 +103,7 @@ export class CustomerService {
     }
     async reservation(req, res) {
         try {
-            const maxsize = 20;
+            const maxsize = 200;
 
             const cus = await Customer.findOne({
                 where: { account_ID: req.account.id },
@@ -189,7 +189,9 @@ export class CustomerService {
             });
         } catch (error) {
             console.log("Error: ", error);
-            res.status(500).json({ message: "Internal Server Error" });
+            res.status(500).json({
+                message: `Internal Server Error, ${error}`,
+            });
         }
     }
 }

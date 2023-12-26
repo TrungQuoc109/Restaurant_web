@@ -1,4 +1,7 @@
-import { managerServiceInstance } from "../service/index.js";
+import {
+    managerServiceInstance,
+    orderServiceInstance,
+} from "../service/index.js";
 
 export class ManagerController {
     static instance;
@@ -28,6 +31,9 @@ export class ManagerController {
     }
     async deleteCustomer(req, res) {
         return await managerServiceInstance.deleteCustomer(req, res);
+    }
+    async updateOrder(req, res) {
+        return await orderServiceInstance.updateOrder(req, res);
     }
 }
 export const managerControllerInstance = ManagerController.getInstance();

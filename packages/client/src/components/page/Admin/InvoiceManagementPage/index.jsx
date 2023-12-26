@@ -22,41 +22,104 @@ import {
 } from "@mui/material";
 import AdminPage from "../adminNav";
 import * as jwt_decode from "jwt-decode";
+import ProductModal from "../../../MenuModal";
 import { useMenuContext } from "../../../../context/MenuContextProvider";
 
 const InvoiceManagementPage = () => {
-    const {
-        products,
-        handleIncreaseQuantityAdminMenu,
-        handleUpdateQuantityAdmin,
-        handleDecreaseQuantityAdmin,
-        productQuantities,
-    } = useMenuContext();
+    const { products } = useMenuContext();
     const [invoices, setInvoices] = useState([]);
     const token = localStorage.getItem("jwtToken");
     const navigate = useNavigate();
     const [expandedInvoiceId, setExpandedInvoiceId] = useState(null);
 
-    //dummy
-    const [takeoutOrderDetails, setTakeoutOrderDetails] = useState();
+    const [OrderDetails, setOrderDetails] = useState();
 
-    const handleToggleExpansion = (id) => {
+    const handleToggleExpansion = async (id, type) => {
+        try {
+            const response = await fetch(
+                `http://localhost:8080/order/${id}/${type}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            if (!response.ok) {
+                throw new Error(`HTTP error!`);
+            }
+
+            const data = await response.json();
+            //  console.log(data.order_detail.detail);
+
+            setOrderDetails(data.order_detail.detail);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
         setExpandedInvoiceId((prevId) => (prevId === id ? null : id));
     };
-
-    const handleDeleteDetail = (detailId, invoiceId) => {
-        const updatedDetails = [...takeoutOrderDetails[invoiceId]];
-        const filteredDetails = updatedDetails.filter(
-            (detail) => detail.id !== detailId
+    const handleSave = async () => {
+        const updatedDetails = OrderDetails.filter(
+            (detail) => detail.order_id === expandedInvoiceId
         );
-        setTakeoutOrderDetails({
-            ...takeoutOrderDetails,
-            [invoiceId]: filteredDetails,
-        });
+
+        const updatedInvoice = invoices.find(
+            (invoice) => invoice.id === expandedInvoiceId
+        );
+        const orderdata = {
+            ...updatedInvoice,
+            item: updatedDetails,
+        };
+        // console.log("order data:", orderdata);
+        // console.log("Updated Details:", updatedDetails);
+        // console.log("Updated Invoice:", updatedInvoice);
+        try {
+            const response = await fetch(
+                `http://localhost:8080/admin/updateorder/${orderdata.id}/${orderdata.order_type}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(orderdata),
+                }
+            );
+
+            if (!response.ok) {
+                console.error("Response:", await response.text());
+                throw new Error(`HTTP error!`, response);
+            }
+        } catch (error) {
+            console.error("Error fetching order:", error);
+        }
+
+        setExpandedInvoiceId(null);
+    };
+
+    const handleDeleteInvoice = async (id, type) => {
+        setInvoices((prevInvoices) =>
+            prevInvoices.filter((invoice) => invoice.id !== id)
+        );
+        try {
+            const response = await fetch(
+                `http://localhost:8080/order/${id}/${type}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            if (!response.ok) {
+                console.log(1);
+            }
+        } catch (error) {
+            console.error("Error fetching order:", error);
+        }
     };
 
     const status = ["Đang chờ", "Đang xử lý", "Đang giao"];
-    const orderTypes = ["takeout", "reservation"];
     useEffect(() => {
         const fetchOrders = async () => {
             try {
@@ -91,28 +154,15 @@ const InvoiceManagementPage = () => {
         }
     }, []);
 
-    const handleDelete = async (id, type) => {
-        setInvoices((prevInvoices) =>
-            prevInvoices.filter((invoice) => invoice.id !== id)
+    const handleDelete = (detailId, invoiceId) => {
+        const updatedDetails = OrderDetails.filter(
+            (detail) =>
+                detail.Item.id !== detailId || detail.order_id !== invoiceId
         );
-        try {
-            const response = await fetch(
-                `http://localhost:8080/order/${id}/${type}`,
-                {
-                    method: "DELETE",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            if (!response.ok) {
-                const data = await response.json();
-                console.log(data);
-            }
-        } catch (error) {
-            console.error("Error fetching users:", error);
-        }
+
+        setOrderDetails(updatedDetails);
     };
+
     const [productModalOpen, setProductModalOpen] = useState(false);
 
     const handleOpenProductModal = () => {
@@ -135,55 +185,69 @@ const InvoiceManagementPage = () => {
         setInvoices(updatedInvoices);
     };
 
-    const handleTypeChange = (event, invoiceId) => {
-        const selectedType = event.target.value;
-        const updatedInvoices = invoices.map((invoice) =>
-            invoice.id === invoiceId
-                ? { ...invoice, order_type: selectedType }
-                : invoice
-        );
-        setInvoices(updatedInvoices);
-    };
-
     const handleAddProduct = (productId) => {
         const selectedProduct = products[productId];
-        const selectedQuantity = productQuantities[productId];
 
-        const existingDetailIndex = takeoutOrderDetails.findIndex(
-            (detail) =>
-                detail.order_ID === expandedInvoiceId &&
-                detail.item_ID === selectedProduct.id
-        );
+        // Check if OrderDetails is defined and not null before using findIndex
+        if (OrderDetails && OrderDetails !== null) {
+            const existingDetailIndex = OrderDetails.findIndex(
+                (detail) =>
+                    detail.order_id === expandedInvoiceId &&
+                    detail.item_ID === selectedProduct.id
+            );
 
-        if (existingDetailIndex !== -1) {
-            const updatedDetails = [...takeoutOrderDetails];
-            const existingDetail = updatedDetails[existingDetailIndex];
-            const updatedQuantity = existingDetail.quantity + selectedQuantity;
-            const updatedAmount = selectedProduct.price * updatedQuantity;
+            if (existingDetailIndex !== -1) {
+                const updatedDetails = [...OrderDetails];
+                const existingDetail = updatedDetails[existingDetailIndex];
+                const updatedQuantity = existingDetail.quantity + 1;
+                const updatedAmount = selectedProduct.price * updatedQuantity;
 
-            updatedDetails[existingDetailIndex] = {
-                ...existingDetail,
-                quantity: updatedQuantity,
-                amount: updatedAmount,
-            };
+                updatedDetails[existingDetailIndex] = {
+                    ...existingDetail,
+                    quantity: updatedQuantity,
+                    amount: updatedAmount,
+                };
 
-            setTakeoutOrderDetails(updatedDetails);
-        } else {
-            const newDetail = {
-                id: takeoutOrderDetails.length + 1,
-                order_ID: expandedInvoiceId,
-                item_ID: selectedProduct.id,
-                quantity: selectedQuantity,
-                amount: selectedProduct.price * selectedQuantity,
-            };
+                setOrderDetails(updatedDetails);
+            } else {
+                const newDetail = {
+                    order_id: expandedInvoiceId,
+                    //  item_ID: selectedProduct.id,
+                    quantity: 1,
+                    amount: selectedProduct.price,
+                    Item: {
+                        id: selectedProduct.id,
+                        name: selectedProduct.name,
+                        price: selectedProduct.price,
+                    },
+                };
 
-            setTakeoutOrderDetails([...takeoutOrderDetails, newDetail]);
+                setOrderDetails([...OrderDetails, newDetail]);
+            }
         }
 
         handleCloseProductModal();
-        console.log("Added product:", newDetail);
     };
 
+    const handleQuantityChange = (detailId, action) => {
+        const updatedDetails = OrderDetails.map((detail) => {
+            if (detail.Item.id === detailId) {
+                let updatedQuantity = detail.quantity;
+                if (action === "increase") {
+                    updatedQuantity += 1;
+                } else if (action === "decrease" && updatedQuantity > 1) {
+                    updatedQuantity -= 1;
+                }
+                return {
+                    ...detail,
+                    quantity: updatedQuantity,
+                };
+            }
+            return detail;
+        });
+
+        setOrderDetails(updatedDetails);
+    };
     //
 
     return (
@@ -248,66 +312,36 @@ const InvoiceManagementPage = () => {
                                             )}
                                         </TableCell>
                                         <TableCell>
-                                            <TableCell>
-                                                {expandedInvoiceId ===
-                                                invoice.id ? (
-                                                    <Select
-                                                        value={
-                                                            invoice.order_type
-                                                        }
-                                                        onChange={(e) =>
-                                                            handleTypeChange(
-                                                                e,
-                                                                invoice.id
-                                                            )
-                                                        }
-                                                    >
-                                                        {orderTypes.map(
-                                                            (type, index) => (
-                                                                <MenuItem
-                                                                    key={index}
-                                                                    value={type}
-                                                                >
-                                                                    {type}
-                                                                </MenuItem>
-                                                            )
-                                                        )}
-                                                    </Select>
-                                                ) : (
-                                                    invoice.order_type
-                                                )}
-                                            </TableCell>
+                                            {invoice.order_type}
                                         </TableCell>
                                         <TableCell>
                                             <Button
                                                 variant="outlined"
                                                 color="secondary"
                                                 onClick={() =>
-                                                    handleDelete(
-                                                        invoice.id,
-                                                        invoice.order_type
+                                                    handleDeleteInvoice(
+                                                        invoice.id
                                                     )
                                                 }
                                             >
                                                 Delete
                                             </Button>
-                                            {invoice.status === 0 ||
-                                            invoice.status === 1 ? (
-                                                <Button
-                                                    variant="outlined"
-                                                    color="primary"
-                                                    onClick={() =>
-                                                        handleToggleExpansion(
-                                                            invoice.id
-                                                        )
-                                                    }
-                                                >
-                                                    {expandedInvoiceId ===
-                                                    invoice.id
-                                                        ? "Save"
-                                                        : "Edit"}
-                                                </Button>
-                                            ) : null}
+
+                                            <Button
+                                                variant="outlined"
+                                                color="primary"
+                                                onClick={() =>
+                                                    handleToggleExpansion(
+                                                        invoice.id,
+                                                        invoice.order_type
+                                                    )
+                                                }
+                                            >
+                                                {expandedInvoiceId ===
+                                                invoice.id
+                                                    ? "Hide"
+                                                    : "Edit"}
+                                            </Button>
                                         </TableCell>
                                     </TableRow>
                                     {expandedInvoiceId === invoice.id && (
@@ -317,7 +351,7 @@ const InvoiceManagementPage = () => {
                                                     <Grid item>
                                                         <Button
                                                             variant="outlined"
-                                                            color="primary"
+                                                            color="success"
                                                             onClick={() =>
                                                                 handleOpenProductModal()
                                                             }
@@ -335,60 +369,142 @@ const InvoiceManagementPage = () => {
                                                                 handleAddProduct
                                                             }
                                                             products={products}
-                                                            handleIncreaseQuantityAdminMenu={
-                                                                handleIncreaseQuantityAdminMenu
-                                                            }
-                                                            handleUpdateQuantityAdmin={
-                                                                handleUpdateQuantityAdmin
-                                                            }
-                                                            handleDecreaseQuantityAdmin={
-                                                                handleDecreaseQuantityAdmin
-                                                            }
                                                         />
+                                                        <Button
+                                                            variant="outlined"
+                                                            color="primary"
+                                                            sx={{ ml: 1 }}
+                                                            onClick={handleSave}
+                                                        >
+                                                            Save
+                                                        </Button>
                                                     </Grid>
                                                     <Table>
                                                         <TableHead>
                                                             <TableRow>
                                                                 <TableCell>
-                                                                    Item ID
+                                                                    Tên món
                                                                 </TableCell>
                                                                 <TableCell>
-                                                                    Quantity
+                                                                    Số lượng
                                                                 </TableCell>
                                                                 <TableCell>
-                                                                    Amount
+                                                                    Thành tiền
                                                                 </TableCell>
                                                                 <TableCell>
-                                                                    Action
+                                                                    Hành động
                                                                 </TableCell>
                                                             </TableRow>
                                                         </TableHead>
 
                                                         <TableBody>
-                                                            {takeoutOrderDetails
-                                                                .filter(
+                                                            {OrderDetails &&
+                                                                OrderDetails.filter(
                                                                     (detail) =>
-                                                                        detail.order_ID ===
+                                                                        detail.order_id ===
                                                                         expandedInvoiceId
-                                                                )
-                                                                .map(
+                                                                ).map(
                                                                     (
                                                                         detail
                                                                     ) => (
                                                                         <TableRow
                                                                             key={
-                                                                                detail.id
+                                                                                detail
+                                                                                    .Item
+                                                                                    .id
                                                                             }
                                                                         >
                                                                             <TableCell>
                                                                                 {
-                                                                                    detail.item_ID
+                                                                                    detail
+                                                                                        .Item
+                                                                                        .name
                                                                                 }
                                                                             </TableCell>
                                                                             <TableCell>
-                                                                                {
-                                                                                    detail.quantity
-                                                                                }
+                                                                                <Grid
+                                                                                    container
+                                                                                    spacing={
+                                                                                        2
+                                                                                    }
+                                                                                    alignItems="center"
+                                                                                >
+                                                                                    <Grid
+                                                                                        item
+                                                                                    >
+                                                                                        <IconButton
+                                                                                            onClick={() =>
+                                                                                                handleQuantityChange(
+                                                                                                    detail
+                                                                                                        .Item
+                                                                                                        .id,
+                                                                                                    "decrease"
+                                                                                                )
+                                                                                            }
+                                                                                            color="primary"
+                                                                                        >
+                                                                                            -
+                                                                                        </IconButton>
+                                                                                    </Grid>
+                                                                                    <Grid
+                                                                                        item
+                                                                                    >
+                                                                                        <TextField
+                                                                                            type="number"
+                                                                                            value={
+                                                                                                detail.quantity
+                                                                                            }
+                                                                                            onChange={(
+                                                                                                e
+                                                                                            ) =>
+                                                                                                handleQuantityChange(
+                                                                                                    e,
+                                                                                                    detail
+                                                                                                        .Item
+                                                                                                        .id
+                                                                                                )
+                                                                                            }
+                                                                                            sx={{
+                                                                                                width: "5rem",
+                                                                                                height: "1.875rem",
+                                                                                                mx: "0.5rem",
+                                                                                                "& input[type='number']":
+                                                                                                    {
+                                                                                                        width: "100%",
+                                                                                                        height: "100%",
+                                                                                                        padding:
+                                                                                                            "0.5rem",
+                                                                                                        borderRadius:
+                                                                                                            "0",
+                                                                                                        "&::-webkit-inner-spin-button":
+                                                                                                            {
+                                                                                                                "-webkit-appearance":
+                                                                                                                    "none",
+                                                                                                                margin: 0,
+                                                                                                            },
+                                                                                                    },
+                                                                                            }}
+                                                                                        />
+                                                                                    </Grid>
+                                                                                    <Grid
+                                                                                        item
+                                                                                    >
+                                                                                        {" "}
+                                                                                        <IconButton
+                                                                                            onClick={() =>
+                                                                                                handleQuantityChange(
+                                                                                                    detail
+                                                                                                        .Item
+                                                                                                        .id,
+                                                                                                    "increase"
+                                                                                                )
+                                                                                            }
+                                                                                            color="primary"
+                                                                                        >
+                                                                                            +
+                                                                                        </IconButton>
+                                                                                    </Grid>
+                                                                                </Grid>
                                                                             </TableCell>
                                                                             <TableCell>
                                                                                 {new Intl.NumberFormat(
@@ -407,8 +523,10 @@ const InvoiceManagementPage = () => {
                                                                                     variant="outlined"
                                                                                     color="secondary"
                                                                                     onClick={() =>
-                                                                                        handleDeleteDetail(
-                                                                                            detail.id,
+                                                                                        handleDelete(
+                                                                                            detail
+                                                                                                .Item
+                                                                                                .id,
                                                                                             expandedInvoiceId
                                                                                         )
                                                                                     }
